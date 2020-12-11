@@ -1,21 +1,30 @@
 import pygame
+import stage
+import numpy as np #Use numpy 1.19.3
+#import player
+
+np.set_printoptions(threshold=np.inf)
+
 pygame.init()
 
 #set window size
-win = pygame.display.set_mode((500, 500))
-
+screen_width = 1000
+screen_height = 600
+win = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Rogue")
 
-x = 50
-y = 50
-width = 10
-height = 10
-vel = 10
+#width of grid is 10 pixels
+grid = 10
+xinit = 20
+yinit = 20
+player_x = 20
+player_y = 20
 
-# variable to keep loop running 
+gameboard = np.zeros((screen_width//grid, screen_height//grid))
+pygame.draw.rect(win,(255,0,0),(player_x*grid,player_y*grid,grid,grid))
+
 run = True
-
-# Main loop
+    
 while run:
     
     for event in pygame.event.get():
@@ -28,30 +37,30 @@ while run:
     keys = pygame.key.get_pressed()
     
     if keys[pygame.K_LEFT]:
-        x -= vel
+        player_x -= 1
         win.fill((0,0,0))
-        pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+        pygame.draw.rect(win,(255,0,0),(player_x*grid,player_y*grid,grid,grid))
         pygame.time.delay(150); 
     if keys[pygame.K_RIGHT]:
-        x += vel
+        player_x += 1
         win.fill((0,0,0))
-        pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+        pygame.draw.rect(win,(255,0,0),(player_x*grid,player_y*grid,grid,grid))
         pygame.time.delay(150); 
     if keys[pygame.K_UP]:
-        y -= vel
+        player_y -= 1
         win.fill((0,0,0))
-        pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+        pygame.draw.rect(win,(255,0,0),(player_x*grid,player_y*grid,grid,grid))
         pygame.time.delay(150); 
     if keys[pygame.K_DOWN]:
-        y += vel
+        player_y += 1
         win.fill((0,0,0))
-        pygame.draw.rect(win,(255,0,0),(x,y,width,height))
+        pygame.draw.rect(win,(255,0,0),(player_x*grid,player_y*grid,grid,grid))
         pygame.time.delay(150); 
     
-    
+    stage.generate(win, gameboard, 1, xinit, yinit)
     
     
     pygame.display.update()
-    
-    
+
+print(gameboard)
 pygame.quit()
