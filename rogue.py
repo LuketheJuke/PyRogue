@@ -28,16 +28,12 @@ run = True
     
 while run:
     for event in pygame.event.get():
-        # if event.type == KEYDOWN:
-            # if event.key == K.ESCAPE:
-                # run = False
         if event.type == pygame.QUIT:
             run = False
     
     keys = pygame.key.get_pressed()
     
     if keys[pygame.K_LEFT]:
-        print("left")
         guy.move_left(keys[pygame.K_LEFT], gameboard, win)
         pygame.time.delay(150)
     if keys[pygame.K_RIGHT]:
