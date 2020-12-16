@@ -1,45 +1,44 @@
 import pygame
-grid = 10
+import stage
+
+grid = 24
 
 class p1():
-    def __init__(self, health, attack, x, y):
+    def __init__(self, health, attack, x, y, spritelist):
         self.health = health
         self.attack = attack
+        self.prev_x = x
         self.x = x
+        self.prev_y = y
         self.y = y
         self.location = (x, y)
+        self.spritelist = spritelist
+        self.frame = 0
 
     def draw(self, win):
-        win.fill((0,0,0))
-        pygame.draw.rect(win,(255,0,0),(self.x*grid, self.y*grid, grid, grid))
+        if self.frame == 0:
+            self.frame = 1
+        else:
+            self.frame = 0
+        win.blit(self.spritelist[self.frame], (self.x*grid, self.y*grid))
 
-    def move_left(self, input, gameboard, win):
-        if gameboard[self.x-1][self.y]:
-            print("It's a wall!")
-        else:
-            self.x -= 1
-            self.draw(win)
-    
-    def move_right(self, input, gameboard, win):
-        if gameboard[self.x+1][self.y]:
-            print("It's a wall!")
-        else:
-            self.x += 1 
-            self.draw(win)
+    def move(self, cx, cy, gameboard, win):
+        self.prev_x = self.x
+        self.prev_y = self.y
 
-    def move_up(self, input, gameboard, win):
-        if gameboard[self.x][self.y-1]:
-            print("It's a wall!")
-        else:
-            self.y -= 1
+        nx = self.x + cx
+        ny = self.y + cy
+        
+        newpos = gameboard[ny][nx]
+        if newpos == 1:
+            self.x = nx
+            self.y = ny
             self.draw(win)
-
-    def move_down(self, input, gameboard, win):
-        if gameboard[self.x][self.y+1]:
-            print("It's a wall!")
+            stage.draw_floor(win, self.prev_x, self.prev_y)
+        # elif newpos == 4
+        #     guy.attack
         else:
-            self.y += 1
-            self.draw(win)
+            print("It's a wall!")
 
     # def attack():
         
