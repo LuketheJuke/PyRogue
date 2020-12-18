@@ -18,10 +18,10 @@ def slice_image(image, tile_width, tile_height):
             tile_line.append(image.subsurface(rect))
     return tile_table
 
-def make_tileset(image):
+def make_tileset(image, grid):
     # Load sprite tileset
     [map, map_w, map_h] = load_image(image)
-    map_scaled = pg.transform.scale(map, (map_w*2, map_h*2))
+    map_scaled = pg.transform.scale(map, (map_w*(grid//8), map_h*(grid//8)))
     # image_width, image_height = map_scaled.get_size()
     tiles = slice_image(map_scaled, 16, 16)
     return tiles

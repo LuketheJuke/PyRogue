@@ -91,7 +91,7 @@ class Game:
         self.level = 1
         # import GRAPHICS
         self.spritenum = 0
-        self.monsters = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/MonsterTiles.png")
+        self.monsters = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/MonsterTiles.png", grid)
 
     def Start(self):
         self.win.fill((0,0,0))
@@ -103,9 +103,9 @@ class Game:
 
     def stage_gen(self):
         # import GRAPHICS
-        stage.get_tiles()
+        stage.get_tiles(grid)
         # Generate and draw the stage based on level
-        (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, grid_w, self.level)
+        (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, grid_w, self.level, grid)
 
     def player_gen(self):
         self.guy = people.p1(15, 6, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])

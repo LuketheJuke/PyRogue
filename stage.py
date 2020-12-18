@@ -3,8 +3,8 @@ import tileset
 from numpy import loadtxt
 from random import randint
 
-def get_tiles():
-    tiles = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png")
+def get_tiles(grid):
+    tiles = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     return tiles
 
 # gameboard tile definitions
@@ -14,11 +14,11 @@ def get_tiles():
 # '3' = player('p')
 # '4' = enemy ('e'')
 # '5' = finish ('f')
-def generate(win, gameboard, height, grid_w, level):
+def generate(win, gameboard, height, grid_w, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
-    tiles = get_tiles()
+    tiles = get_tiles(grid)
     if level == 1:
         f = open("levels/level1.txt", "r")
         xinit = 0
@@ -51,7 +51,7 @@ def generate(win, gameboard, height, grid_w, level):
 
 # draw different wall sprites depending on surrounding layout
 def draw_stage(win, gameboard, playerx, playery, sight, grid):  
-    tiles = get_tiles()
+    tiles = get_tiles(grid)
     wall = 2
     floor = (1, 3, 4, 5)
     # (len(gameboard)-1) # ymax
@@ -106,5 +106,5 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
                                 win.blit(pg.transform.flip(tiles[4][2],0,1), (x*grid, y*grid))
 
 def draw_floor(win, x, y, grid):
-    tiles = get_tiles()
+    tiles = get_tiles(grid)
     win.blit(tiles[0][0], (x*grid, y*grid))
