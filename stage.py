@@ -14,7 +14,7 @@ def get_tiles():
 # '3' = player('p')
 # '4' = enemy ('e'')
 # '5' = finish ('f')
-def generate(win, gameboard, height, level):
+def generate(win, gameboard, height, grid_w, level):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
@@ -25,11 +25,10 @@ def generate(win, gameboard, height, level):
         yinit = 0
         leveldata = []
         line = []
-        print(height)
         for y in range(0,(height)):
             # print(y)
             line = f.readline()
-            leveldata.append(line[0:50])
+            leveldata.append(line[0:grid_w])
             for x in range(0,len(gameboard[0])): 
                 # print(x)
                 if line[x] == '.': 

@@ -21,7 +21,7 @@ def slice_image(image, tile_width, tile_height):
 def make_tileset(image):
     # Load sprite tileset
     [map, map_w, map_h] = load_image(image)
-    map_scaled = pg.transform.scale(map, (map_w*3, map_h*3))
+    map_scaled = pg.transform.scale(map, (map_w*2, map_h*2))
     # image_width, image_height = map_scaled.get_size()
-    tiles = slice_image(map_scaled, 24, 24)
+    tiles = slice_image(map_scaled, 16, 16)
     return tiles

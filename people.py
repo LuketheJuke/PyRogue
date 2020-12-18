@@ -56,7 +56,7 @@ class p1():
     
     def hurt(self, damage):
         self.health -= damage
-        print(self.health)
+        # print(self.health)
         if self.health <= 0:
             self.alive = 0
 

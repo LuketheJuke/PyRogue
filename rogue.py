@@ -5,9 +5,22 @@ import people
 import tileset
 import numpy as np
 
-grid = 24
-screen_width = grid*50
-screen_height = grid*40
+pg.init()
+
+# Return info for the current PC screen
+ScreenInfo = pg.display.Info()
+
+# Set the size of the gameboard's grid based on current screen size
+grid_w = 60
+grid_h = 40
+if ScreenInfo.current_h//grid_h >= 24 and ScreenInfo.current_w//grid_w >= 24:
+    grid = 24
+elif ScreenInfo.current_h//grid_h >= 16 and ScreenInfo.current_w//grid_w >= 16:
+    grid = 16
+else:
+    grid = 8
+screen_width = grid * grid_w
+screen_height = grid * grid_h
 
 class hud():
     def __init__(self, scr_width, scr_height):
@@ -18,7 +31,7 @@ class hud():
         self.width = scr_width - self.x
         self.height = scr_height - self.y
         self.gameheight = (screen_height - self.height)//grid
-        self.FONT = pg.freetype.Font("text/manaspc.ttf", 20)
+        self.FONT = pg.freetype.Font("text/manaspc.ttf", grid)
         self.prompt = " "
         self.promptlist = []
         self.new_prompt = 0
@@ -36,11 +49,11 @@ class hud():
         self.print_to_HUD("Attack: " + str(attack), 2, 37)
         # Display current stage
         # Display Inventory
-        self.print_to_HUD("Inventory: ", 15, 33)
+        self.print_to_HUD("Inventory: ", (grid_w/4)*1, 33)
         #Check whether prompt has changed
         # Display Info to the player
         for i in range(0,len(self.promptlist)):
-            self.print_to_HUD(self.promptlist[i], 25, 33+i)
+            self.print_to_HUD(self.promptlist[i], (grid_w/4)*2, 33+i)
 
     def print_to_HUD(self, text, x, y):
         text_surf, rect = self.FONT.render(text, (255, 255, 255))
@@ -59,7 +72,6 @@ class hud():
 # Main game class
 class Game:
     def __init__(self):
-        pg.init()
         # width of grid is 24 pixels
         # self.grid = 24
         # # set window size and label
@@ -67,7 +79,7 @@ class Game:
         # screen_height = self.grid*40
         pg.display.set_caption("Rogue")
         # initialize gameboard array - defines each location in the grid
-        self.gameboard = np.zeros((screen_height//grid, screen_width//grid))
+        self.gameboard = np.zeros((grid_h, grid_w))
         self.win = pg.display.set_mode((screen_width, screen_height))
         self.win.fill((0,0,0))
         # create clock variable and key repeat rate
@@ -93,7 +105,7 @@ class Game:
         # import GRAPHICS
         stage.get_tiles()
         # Generate and draw the stage based on level
-        (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, self.level)
+        (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, grid_w, self.level)
 
     def player_gen(self):
         self.guy = people.p1(15, 6, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])
