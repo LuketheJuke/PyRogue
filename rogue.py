@@ -100,15 +100,21 @@ class Game:
         self.spritenum = 0
         self.monsters = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/MonsterTiles.png", grid)
 
-    def Restart(self):
-        # Similar to start, but call everything in its initial state
-        pass
-
     def Start(self):
         self.win.fill((0,0,0))
-        # Start game - also used to go to the next level
+        # Start game - also used to restart the game
+        RogueHUD.to_prompt("Number keys to use items")
+        RogueHUD.to_prompt("Arrow keys to move/attack")
+        RogueHUD.to_prompt("Good luck!")
+        self.level = 1
         self.stage_gen()
-        self.player_gen()
+        self.player_gen(1)
+        self.mob_gen()
+
+    def next_stage(self):
+        self.win.fill((0,0,0))
+        self.stage_gen()
+        self.player_gen(0)
         self.mob_gen()
         RogueHUD.to_prompt("Welcome to level " + str(self.level))
 
@@ -118,23 +124,37 @@ class Game:
         # Generate and draw the stage based on level
         (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, grid_w, self.level, grid)
 
-    def player_gen(self):
-        self.guy = people.p1(15, items.dagger, items.shirt, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])
+    def player_gen(self, init):
+        if init == 1: 
+            # First time player generation
+            self.guy = people.p1(15, items.dagger, items.shirt, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])
+        else:
+            # Generate player at start of new stage
+            self.guy.x = self.xinit
+            self.guy.y = self.yinit 
 
     # Generate mobs
     def mob_gen(self):
         self.mobs = []
+        self.dragon_spawn = 0
         # name, health, attack, xpval
         enemylist = [['BAT', 3, 1, 2, [self.monsters[0][17], self.monsters[1][17]]], 
                     ['GHOST', 5, 2, 4, [self.monsters[0][8], self.monsters[1][8]]], 
-                    ['GOBLIN', 5, 1, 3, [self.monsters[0][6], self.monsters[1][6]]], 
+                    ['GOBLIN', 6, 3, 5, [self.monsters[0][6], self.monsters[1][6]]], 
                     ['SKELETON', 8, 3, 6, [self.monsters[0][5], self.monsters[1][5]]], 
                     ['WEREWOLF', 10, 5, 12, [self.monsters[0][15], self.monsters[1][15]]]]
+        dragon =    ['DRAGON', 60, 12, 100, [self.monsters[1][14], self.monsters[0][14],  # A 3 dimensional array with x, y, spritenum as the parameters 
+                                            self.monsters[1][13], self.monsters[0][13],  
+                                            self.monsters[1][12], self.monsters[0][12], 
+                                            self.monsters[1][11], self.monsters[0][11]]]
         for y in range(0,(len(self.gameboard))):
             for x in range(0,len(self.gameboard[0])):
                 if self.gameboard[y][x] == 4:
                     r = np.random.randint(0, len(enemylist))
                     self.mobs.append(people.mob(x, y, enemylist[r][0], enemylist[r][1], enemylist[r][2], enemylist[r][3], enemylist[r][4]))
+                if self.gameboard[y][x] == 9:
+                    self.dragon = people.dragon(x, y, dragon[0], dragon[1], dragon[2], dragon[3], dragon[4])
+                    self.dragon_spawn = 1
 
     # Handle inputs and modify game objects
     def events(self):
@@ -161,20 +181,21 @@ class Game:
                         self.guy.use_item(2)
                     elif event.key == pg.K_4:
                         self.guy.use_item(3)
-                elif self.guy.alive == 0 and (event.key == pg.K_y or event.key == pg.K_Y):
+                # If player dies or dragon is killed, game is over, prompt to restart the game. 
+                elif (self.guy.alive == 0 or self.dragon.alive == 0) and (event.key == pg.K_y or event.key == pg.K_Y):
                     self.Start()
-                elif self.guy.alive == 0 and (event.key == pg.K_n or event.key == pg.K_N):
+                elif (self.guy.alive == 0 and self.dragon.alive == 0) and (event.key == pg.K_n or event.key == pg.K_N):
                     self.playing = False
                 else:
                     self.player_turn(0, 0)
     # Player turn
     def player_turn(self, cx, cy):
         if self.guy.alive == 1:
-            [hit_enemy, enemy_x, enemy_y, next_level] = self.guy.move_player(cx, cy, self.gameboard, self.win, grid)
+            [hit_enemy, hit_dragon, enemy_x, enemy_y, next_level] = self.guy.move_player(cx, cy, self.gameboard, self.win, grid)
             if next_level == 1:
                 self.level += 1
                 # print(self.level)
-                self.Start()
+                self.next_stage()
             elif hit_enemy == 1:
                 for i in self.mobs:
                     if (i.x == enemy_x and i.y == enemy_y):
@@ -182,6 +203,11 @@ class Game:
                         RogueHUD.to_prompt("YOU hit " + i.name + " for " + str(damage) + " damage")
                         if level_up:
                             RogueHUD.to_prompt("LEVEL UP!")
+            elif hit_dragon == 1:
+                damage, level_up = self.guy.hit(self.dragon)
+                RogueHUD.to_prompt("YOU hit " + self.dragon.name + " for " + str(damage) + " damage")
+                if level_up:
+                    RogueHUD.to_prompt("LEVEL UP!")
         self.mob_turn()
 
     # mobs movement and attack
@@ -192,11 +218,20 @@ class Game:
                 hit_player = i.move_mob(self.gameboard, self.win, self.guy.x, self.guy.y)
                 # Check to see if we hit the player
                 if hit_player == 1:
-                    RogueHUD.to_prompt(i.name + " hit YOU for " + str(i.attack) + " damage")
-                    i.hit(self.guy)
+                    damage = i.hit(self.guy)
+                    RogueHUD.to_prompt(i.name + " hit YOU for " + str(damage) + " damage")
             elif i.cleared == 0:
                 i.clear_mob(self.gameboard, self.win, grid)
                 RogueHUD.to_prompt(i.name + " was slain!")
+        if self.dragon_spawn == 1:
+            if self.dragon.alive == 1:
+                dragon_hit = self.dragon.move(self.gameboard, self.win, self.guy.x, self.guy.y)
+                if dragon_hit == 1:
+                    damage = self.dragon.hit(self.guy)
+                    RogueHUD.to_prompt(self.dragon.name + " hit YOU for " + str(damage) + " damage")
+            elif self.dragon.cleared == 0:
+                RogueHUD.to_prompt("YOU WIN! Do you want to play again (Y/N)?")
+                self.dragon.clear_dragon(self.gameboard, self.win, grid)
 
     # Update game state
     def update(self):
@@ -214,10 +249,13 @@ class Game:
             self.guy.draw(self.win, self.spritenum, grid)
         elif self.guy.cleared == 0:
             self.guy.clear_player(self.gameboard, self.win, grid)
-            RogueHUD.to_prompt("YOU DIED! Do you want to play again (Y,N)?")
+            RogueHUD.to_prompt("YOU DIED! Do you want to play again (Y/N)?")
         for i in self.mobs:
             if i.alive == 1:
                 i.draw(self.win, self.spritenum, self.guy.x, self.guy.y, self.guy.sight, grid)
+        if self.dragon_spawn == 1:
+            if self.dragon.alive == 1:
+                self.dragon.draw(self.win, self.spritenum, self.guy.x, self.guy.y, self.guy.sight, grid)                
         #draw some of the stage based on player location
         stage.draw_stage(self.win, self.gameboard, self.guy.x, self.guy.y, self.guy.sight, grid)
         pg.display.update()
@@ -228,6 +266,7 @@ class Game:
             self.events()
             self.update()
             RogueHUD.update()
+
 
 Rogue = Game()
 RogueHUD = hud(screen_width, screen_height)

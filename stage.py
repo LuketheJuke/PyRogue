@@ -17,9 +17,12 @@ levellist = ["levels/level1.txt",
 # '3' = player('p')
 # '4' = enemy ('e'')
 # '5' = finish ('f')
-# '6' = weapon ('w')
+# '6' = long sword ('w')
 # '7' = potion ('o')
-# '8' = armor ('a')
+# '8' = leather armor ('a')
+# '9' = DRAGON ('d')
+# '10' = battle axe ('b')
+# '11' = plate mail ('m')
 def generate(win, gameboard, height, grid_w, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
@@ -29,6 +32,8 @@ def generate(win, gameboard, height, grid_w, level, grid):
         f = open("levels/level1.txt", "r")
     elif level == 2:
         f = open("levels/level2.txt", "r")
+    elif level == 3:
+        f = open("levels/level3.txt", "r")
     xinit = 0
     yinit = 0
     leveldata = []
@@ -40,25 +45,31 @@ def generate(win, gameboard, height, grid_w, level, grid):
         for x in range(0,len(gameboard[0])): 
             # print(x)
             if line[x] == '.': 
-                gameboard[y][x] = '0'
+                gameboard[y][x] = 0
             elif line[x] == '*': 
-                gameboard[y][x] = '1'
+                gameboard[y][x] = 1
             elif line[x] == '=':
-                gameboard[y][x] = '2'
+                gameboard[y][x] = 2
             elif line[x] == 'p':
-                gameboard[y][x] = '3'
+                gameboard[y][x] = 3
                 xinit = x
                 yinit = y
             elif line[x] == 'e':
-                gameboard[y][x] = '4'
+                gameboard[y][x] = 4
             elif line[x] == 'f':
-                gameboard[y][x] = '5'
+                gameboard[y][x] = 5
             elif line[x] == 'w':
-                gameboard[y][x] = '6'
+                gameboard[y][x] = 6
             elif line[x] == 'o':
-                gameboard[y][x] = '7'
+                gameboard[y][x] = 7
             elif line[x] == 'a':
-                gameboard[y][x] = '8'
+                gameboard[y][x] = 8
+            elif line[x] == 'd':
+                gameboard[y][x] = 9
+            elif line[x] == 'b':
+                gameboard[y][x] = 10
+            elif line[x] == 'm':
+                gameboard[y][x] = 11
     # print(gameboard)
     f.close()
     return (xinit, yinit)
@@ -70,7 +81,7 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
     tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     item_tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/ItemTiles.png", grid)
     wall = 2
-    floor = (1, 3, 4, 5, 6, 7) #tile types that are treated as a floor
+    floor = (1, 3, 4, 5, 6, 7, 8, 9, 10, 11) #tile types that are treated as a floor
     # (len(gameboard)-1) # ymax
     # len(gameboard[0])-1 # xmax
     for y in range(playery-sight, playery+sight):
@@ -83,11 +94,15 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
                 elif gameboard[y][x] == 5:
                     win.blit(tiles[4][3], (x*grid, y*grid))
                 elif gameboard[y][x] == 6:
-                    win.blit(item_tiles[0][3], (x*grid, y*grid))
+                    win.blit(item_tiles[1][2], (x*grid, y*grid))
                 elif gameboard[y][x] == 7:
                     win.blit(item_tiles[1][0], (x*grid, y*grid))
                 elif gameboard[y][x] == 8:
                     win.blit(item_tiles[1][5], (x*grid, y*grid))
+                elif gameboard[y][x] == 10:
+                    win.blit(item_tiles[0][3], (x*grid, y*grid))
+                elif gameboard[y][x] == 11:
+                    win.blit(item_tiles[1][6], (x*grid, y*grid))
                 elif gameboard[y][x] == 2:
                     north = gameboard[y-1][x] 
                     south = gameboard[y+1][x] 
