@@ -182,9 +182,9 @@ class Game:
                     elif event.key == pg.K_4:
                         self.guy.use_item(3)
                 # If player dies or dragon is killed, game is over, prompt to restart the game. 
-                elif (self.guy.alive == 0 or self.dragon.alive == 0) and (event.key == pg.K_y or event.key == pg.K_Y):
+                elif (self.guy.alive == 0) and (event.key == pg.K_y):
                     self.Start()
-                elif (self.guy.alive == 0 and self.dragon.alive == 0) and (event.key == pg.K_n or event.key == pg.K_N):
+                elif (self.guy.alive == 0) and (event.key == pg.K_n):
                     self.playing = False
                 else:
                     self.player_turn(0, 0)
