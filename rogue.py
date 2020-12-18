@@ -237,7 +237,7 @@ class Game:
     def update(self):
         # Only change sprites every 500 loops to slow down animation
         if self.frame == 0:
-            self.frame = 500
+            self.frame = 100
             if self.spritenum == 0:
                 self.spritenum = 1
             else:
