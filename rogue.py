@@ -3,17 +3,18 @@ import pygame.freetype
 import stage
 import people
 import tileset
+import items
 import numpy as np
 
 np.set_printoptions(threshold=np.inf)
 pg.init()
 
-# Return info for the current PC screen
+# Return info for the PC screen
 ScreenInfo = pg.display.Info()
 
-# Set the size of the gameboard's grid based on current screen size
 grid_w = 60
 grid_h = 40
+# Set the size of the gameboard's grid based on current screen size
 if ScreenInfo.current_h//grid_h >= 24 and ScreenInfo.current_w//grid_w >= 24:
     grid = 24
 elif ScreenInfo.current_h//grid_h >= 16 and ScreenInfo.current_w//grid_w >= 16:
@@ -25,10 +26,10 @@ screen_height = grid * grid_h
 
 class hud():
     def __init__(self, scr_width, scr_height):
-        # Define location as top left corner
+        # Define top left corner
         self.x = 0*grid
         self.y = 32*grid
-        # HUD should be drawn to the edges of the screen
+        # HUD should be drawn at the bottom of the screen, size based on screen size
         self.width = scr_width - self.x
         self.height = scr_height - self.y
         self.gameheight = (screen_height - self.height)//grid
@@ -40,17 +41,22 @@ class hud():
     def update(self):
         hud_rect = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(Rogue.win, (0,0,0), hud_rect)
-        [health, health_max, attack] = Rogue.guy.get_stats()
         # Display level # to HUD
-        self.print_to_HUD("Player Level: ", 2, 33)
+        self.print_to_HUD("Player Level: " + str(Rogue.guy.level), 2, 33)
         # Display health
-        self.print_to_HUD("Health: " + str(health) + "/" + str(health_max), 2, 34)
+        self.print_to_HUD("Health: " + str(Rogue.guy.health) + "/" + str(Rogue.guy.health_max), 2, 34)
         # Display weapon and attack value
-        self.print_to_HUD("Weapon: Longsword", 2, 36)
-        self.print_to_HUD("Attack: " + str(attack), 2, 37)
-        # Display current stage
+        self.print_to_HUD("Weapon: " + Rogue.guy.weapon.name, 2, 36)
+        self.print_to_HUD("Attack: " + str(Rogue.guy.weapon.attack), 2, 37)
+        # Display armor and defense
+        self.print_to_HUD("Armor: " + Rogue.guy.armor.name, 2, 38)
+        self.print_to_HUD("Defense: " + str(Rogue.guy.armor.defense), 2, 39)
         # Display Inventory
         self.print_to_HUD("Inventory: ", (grid_w/4)*1, 33)
+        self.print_to_HUD("1: " + Rogue.guy.inventory[0].name, (grid_w/4)*1, 34)
+        self.print_to_HUD("2: " + Rogue.guy.inventory[1].name, (grid_w/4)*1, 35)
+        self.print_to_HUD("3: " + Rogue.guy.inventory[2].name, (grid_w/4)*1, 36)
+        self.print_to_HUD("4: " + Rogue.guy.inventory[3].name, (grid_w/4)*1, 37)
         #Check whether prompt has changed
         # Display Info to the player
         for i in range(0,len(self.promptlist)):
@@ -108,12 +114,12 @@ class Game:
 
     def stage_gen(self):
         # import GRAPHICS
-        stage.get_tiles(grid)
+        stage.get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
         # Generate and draw the stage based on level
         (self.xinit, self.yinit) = stage.generate(self.win, self.gameboard, RogueHUD.gameheight, grid_w, self.level, grid)
 
     def player_gen(self):
-        self.guy = people.p1(15, 6, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])
+        self.guy = people.p1(15, items.dagger, items.shirt, self.xinit, self.yinit, [self.monsters[0][4], self.monsters[1][4]])
 
     # Generate mobs
     def mob_gen(self):
@@ -127,12 +133,12 @@ class Game:
         for y in range(0,(len(self.gameboard))):
             for x in range(0,len(self.gameboard[0])):
                 if self.gameboard[y][x] == 4:
-                    r = np.random.randint(1, len(enemylist))
+                    r = np.random.randint(0, len(enemylist))
                     self.mobs.append(people.mob(x, y, enemylist[r][0], enemylist[r][1], enemylist[r][2], enemylist[r][3], enemylist[r][4]))
 
     # Handle inputs and modify game objects
     def events(self):
-        num_keys = [pg.K_0, pg.K_1, pg.K_2]
+        num_keys = [pg.K_1, pg.K_2, pg.K_3, pg.K_4]
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.playing = False
@@ -147,8 +153,14 @@ class Game:
                 elif event.key == pg.K_DOWN:
                     self.player_turn(0, 1)
                 elif event.key in num_keys:
-                    print("ITEM TIME")
-                    # self.guy.use_item(event.key)
+                    if event.key == pg.K_1:
+                        self.guy.use_item(0)
+                    elif event.key == pg.K_2:
+                        self.guy.use_item(1)
+                    elif event.key == pg.K_3:
+                        self.guy.use_item(2)
+                    elif event.key == pg.K_4:
+                        self.guy.use_item(3)
                 elif self.guy.alive == 0 and (event.key == pg.K_y or event.key == pg.K_Y):
                     self.Start()
                 elif self.guy.alive == 0 and (event.key == pg.K_n or event.key == pg.K_N):
@@ -161,13 +173,15 @@ class Game:
             [hit_enemy, enemy_x, enemy_y, next_level] = self.guy.move_player(cx, cy, self.gameboard, self.win, grid)
             if next_level == 1:
                 self.level += 1
-                print(self.level)
+                # print(self.level)
                 self.Start()
             elif hit_enemy == 1:
                 for i in self.mobs:
                     if (i.x == enemy_x and i.y == enemy_y):
-                        self.guy.hit(i)
-                        RogueHUD.to_prompt("YOU hit " + i.name + " for " + str(self.guy.attack) + " damage")
+                        damage, level_up = self.guy.hit(i)
+                        RogueHUD.to_prompt("YOU hit " + i.name + " for " + str(damage) + " damage")
+                        if level_up:
+                            RogueHUD.to_prompt("LEVEL UP!")
         self.mob_turn()
 
     # mobs movement and attack

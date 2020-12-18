@@ -3,8 +3,8 @@ import tileset
 from numpy import loadtxt
 from random import randint
 
-def get_tiles(grid):
-    tiles = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
+def get_tiles(file, grid):
+    tiles = tileset.make_tileset(file, grid)
     return tiles
 
 levellist = ["levels/level1.txt", 
@@ -17,11 +17,14 @@ levellist = ["levels/level1.txt",
 # '3' = player('p')
 # '4' = enemy ('e'')
 # '5' = finish ('f')
+# '6' = weapon ('w')
+# '7' = potion ('o')
+# '8' = armor ('a')
 def generate(win, gameboard, height, grid_w, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
-    tiles = get_tiles(grid)
+    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     if level == 1:
         f = open("levels/level1.txt", "r")
     elif level == 2:
@@ -50,7 +53,13 @@ def generate(win, gameboard, height, grid_w, level, grid):
                 gameboard[y][x] = '4'
             elif line[x] == 'f':
                 gameboard[y][x] = '5'
-    print(gameboard)
+            elif line[x] == 'w':
+                gameboard[y][x] = '6'
+            elif line[x] == 'o':
+                gameboard[y][x] = '7'
+            elif line[x] == 'a':
+                gameboard[y][x] = '8'
+    # print(gameboard)
     f.close()
     return (xinit, yinit)
 
@@ -58,18 +67,27 @@ def generate(win, gameboard, height, grid_w, level, grid):
 
 # draw different wall sprites depending on surrounding layout
 def draw_stage(win, gameboard, playerx, playery, sight, grid):  
-    tiles = get_tiles(grid)
+    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
+    item_tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/ItemTiles.png", grid)
     wall = 2
-    floor = (1, 3, 4, 5)
+    floor = (1, 3, 4, 5, 6, 7) #tile types that are treated as a floor
     # (len(gameboard)-1) # ymax
     # len(gameboard[0])-1 # xmax
     for y in range(playery-sight, playery+sight):
         for x in range(playerx-sight, playerx+sight):
-            if (abs(playerx-x) + abs(playery-y)) < sight:
+            if y >= len(gameboard) or x >= len(gameboard[0]):
+                pass
+            elif (abs(playerx-x) + abs(playery-y)) < sight:
                 if gameboard[y][x] == 1:
                     win.blit(tiles[0][0], (x*grid, y*grid))
                 elif gameboard[y][x] == 5:
                     win.blit(tiles[4][3], (x*grid, y*grid))
+                elif gameboard[y][x] == 6:
+                    win.blit(item_tiles[0][3], (x*grid, y*grid))
+                elif gameboard[y][x] == 7:
+                    win.blit(item_tiles[1][0], (x*grid, y*grid))
+                elif gameboard[y][x] == 8:
+                    win.blit(item_tiles[1][5], (x*grid, y*grid))
                 elif gameboard[y][x] == 2:
                     north = gameboard[y-1][x] 
                     south = gameboard[y+1][x] 
@@ -113,5 +131,5 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
                                 win.blit(pg.transform.flip(tiles[4][2],0,1), (x*grid, y*grid))
 
 def draw_floor(win, x, y, grid):
-    tiles = get_tiles(grid)
+    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     win.blit(tiles[0][0], (x*grid, y*grid))

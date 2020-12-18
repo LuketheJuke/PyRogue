@@ -1,34 +1,44 @@
 from dice import roll
 
-# weapon attributes:
-# name, [attackmin, attackmax]
-weapons = [["Dagger", [1,4]], 
-        ["Short Sword", [2,4]], 
-        ["Long Sword", [2,6]], 
-        ["Battle Axe", [1,12]], 
-        ["Claymore", [3,6]]]
+# Making classes for weapons and armor
+# Right now they're simple but they'll be useful if I add more weapon stats like durability
+class weapon():
+    def __init__(self, name, attacknum, attack):
+        self.name = name
+        self.attacknum = attacknum # number of times to roll the attack damage
+        self.attack = attack
+
+    def use():
+        pass
+
+dagger = weapon("Dagger", 1, 4)
+long_sword = weapon("Long Sword", 1, 8)
+battle_axe = weapon("Battle Axe", 1, 12)
+
+
+class armor():
+    def __init__(self, name, defense):
+        self.name = name
+        self.defense = defense
+
+shirt = armor("Plain Shirt", 0)
+leather_armor = armor("Leather Armor", 1)
+chain_mail = armor("Chain Mail", 2)
+plate_mail = armor("Plate Mail", 3)
+
 
 # potions:
 # healing potion - heals
-# armor potion - raises armor for a few turns
-# strength potion - raises attack for a few turns
-# sight potion - reveals the whole map
+class potion():
+    def __init__(self, name, level):
+        self.name = name = name
+        self.level = level
 
-class mod_potion():
-    def __init__(self, name):
-        self.name = name
+    # Heal the player
+    def use(self):
+        heal = roll(self.level, 4) # heal for 2d4
+        return heal
 
-    def healing(self, health, grade):
-        heal = roll(grade,4)
-        health += heal
-        print("Healed  by " + str(heal))
-    
-    def sight(self)
-
-# armor types
-# name, armor value
-armor = [["Shirt", 0], 
-        ["Leather", 1], 
-        ["Chain", 2], 
-        ["Plate", 3], 
-        ["Dragon", 4]]
+empty = potion(" ", 0) # empty object
+healing_potion = potion("Healing Potion", 2)
+# greater_healing_potion = potion("Greater Healing Potion", 4)
