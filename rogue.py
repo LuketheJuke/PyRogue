@@ -101,6 +101,7 @@ class Game:
         self.monsters = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/MonsterTiles.png", grid)
 
     def Start(self):
+        self.game_end = 0
         self.win.fill((0,0,0))
         # Start game - also used to restart the game
         RogueHUD.to_prompt("Number keys to use items")
@@ -182,9 +183,9 @@ class Game:
                     elif event.key == pg.K_4:
                         self.guy.use_item(3)
                 # If player dies or dragon is killed, game is over, prompt to restart the game. 
-                elif (self.guy.alive == 0) and (event.key == pg.K_y):
+                elif (self.guy.alive == 0 or self.game_end == 1) and (event.key == pg.K_y):
                     self.Start()
-                elif (self.guy.alive == 0) and (event.key == pg.K_n):
+                elif (self.guy.alive == 0 or self.game_end == 1) and (event.key == pg.K_n):
                     self.playing = False
                 else:
                     self.player_turn(0, 0)
@@ -230,6 +231,7 @@ class Game:
                     damage = self.dragon.hit(self.guy)
                     RogueHUD.to_prompt(self.dragon.name + " hit YOU for " + str(damage) + " damage")
             elif self.dragon.cleared == 0:
+                self.game_end = 1
                 RogueHUD.to_prompt("YOU WIN! Do you want to play again (Y/N)?")
                 self.dragon.clear_dragon(self.gameboard, self.win, grid)
 
