@@ -5,6 +5,7 @@ import people
 import tileset
 import numpy as np
 
+np.set_printoptions(threshold=np.inf)
 pg.init()
 
 # Return info for the current PC screen
@@ -93,13 +94,17 @@ class Game:
         self.spritenum = 0
         self.monsters = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/MonsterTiles.png", grid)
 
+    def Restart(self):
+        # Similar to start, but call everything in its initial state
+        pass
+
     def Start(self):
         self.win.fill((0,0,0))
-        # Start game - also used to restart
+        # Start game - also used to go to the next level
         self.stage_gen()
         self.player_gen()
         self.mob_gen()
-        RogueHUD.to_prompt("Good luck!")
+        RogueHUD.to_prompt("Welcome to level " + str(self.level))
 
     def stage_gen(self):
         # import GRAPHICS
@@ -153,8 +158,12 @@ class Game:
     # Player turn
     def player_turn(self, cx, cy):
         if self.guy.alive == 1:
-            [hit_enemy, enemy_x, enemy_y] = self.guy.move_player(cx, cy, self.gameboard, self.win, grid)
-            if hit_enemy == 1:
+            [hit_enemy, enemy_x, enemy_y, next_level] = self.guy.move_player(cx, cy, self.gameboard, self.win, grid)
+            if next_level == 1:
+                self.level += 1
+                print(self.level)
+                self.Start()
+            elif hit_enemy == 1:
                 for i in self.mobs:
                     if (i.x == enemy_x and i.y == enemy_y):
                         self.guy.hit(i)

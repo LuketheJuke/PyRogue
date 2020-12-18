@@ -7,6 +7,9 @@ def get_tiles(grid):
     tiles = tileset.make_tileset("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     return tiles
 
+levellist = ["levels/level1.txt", 
+            "levels/level2.txt"]
+
 # gameboard tile definitions
 # '0' = empty ('.')
 # '1' = walkable floor ('#')
@@ -21,31 +24,35 @@ def generate(win, gameboard, height, grid_w, level, grid):
     tiles = get_tiles(grid)
     if level == 1:
         f = open("levels/level1.txt", "r")
-        xinit = 0
-        yinit = 0
-        leveldata = []
-        line = []
-        for y in range(0,(height)):
-            # print(y)
-            line = f.readline()
-            leveldata.append(line[0:grid_w])
-            for x in range(0,len(gameboard[0])): 
-                # print(x)
-                if line[x] == '.': 
-                    gameboard[y][x] = '0'
-                elif line[x] == '*': 
-                    gameboard[y][x] = '1'
-                elif line[x] == '=':
-                    gameboard[y][x] = '2'
-                elif line[x] == 'p':
-                    gameboard[y][x] = '3'
-                    xinit = x
-                    yinit = y
-                elif line[x] == 'e':
-                    gameboard[y][x] = '4'
-                elif line[x] == 'f':
-                    gameboard[y][x] = '5'
-        return (xinit, yinit)
+    elif level == 2:
+        f = open("levels/level2.txt", "r")
+    xinit = 0
+    yinit = 0
+    leveldata = []
+    line = []
+    for y in range(0,(height)):
+        # print(y)
+        line = f.readline()
+        leveldata.append(line[0:grid_w])
+        for x in range(0,len(gameboard[0])): 
+            # print(x)
+            if line[x] == '.': 
+                gameboard[y][x] = '0'
+            elif line[x] == '*': 
+                gameboard[y][x] = '1'
+            elif line[x] == '=':
+                gameboard[y][x] = '2'
+            elif line[x] == 'p':
+                gameboard[y][x] = '3'
+                xinit = x
+                yinit = y
+            elif line[x] == 'e':
+                gameboard[y][x] = '4'
+            elif line[x] == 'f':
+                gameboard[y][x] = '5'
+    print(gameboard)
+    f.close()
+    return (xinit, yinit)
 
         # return x_start, y_start
 

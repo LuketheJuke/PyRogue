@@ -23,5 +23,5 @@ def make_tileset(image, grid):
     [map, map_w, map_h] = load_image(image)
     map_scaled = pg.transform.scale(map, (map_w*(grid//8), map_h*(grid//8)))
     # image_width, image_height = map_scaled.get_size()
-    tiles = slice_image(map_scaled, 16, 16)
+    tiles = slice_image(map_scaled, grid, grid)
     return tiles

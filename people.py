@@ -34,7 +34,7 @@ class p1():
         next_level = 0
 
         newpos = gameboard[ny][nx]
-        if newpos == 1 or newpos == 5:
+        if newpos == 1:
             self.x = nx
             self.y = ny
             gameboard[self.y][self.x] = '3'
@@ -47,7 +47,7 @@ class p1():
         else:
             pass
         # Return hit enemy and it's position
-        return [hit_enemy, nx, ny]
+        return [hit_enemy, nx, ny, next_level]
 
     def hit(self, enemy):
         enemy.hurt(roll(1,self.attack))
