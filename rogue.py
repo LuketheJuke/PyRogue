@@ -1,10 +1,11 @@
 import pygame as pg
+import numpy as np
 import pygame.freetype
 import stage
 import people
 import tileset
 import items
-import numpy as np
+
 
 np.set_printoptions(threshold=np.inf)
 pg.init()
