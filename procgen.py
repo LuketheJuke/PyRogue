@@ -23,16 +23,38 @@ class Room:
 
 
 class GameMap:
+    def __init__(self, width, height, dun_level):
+        self.stage_w = width
+        self.stage_h = height
+
     def create_rooms(self):
+        #Create a certain number of rooms in randomized positions, check for intersections, keep track of each place
         rooms = []
         num_rooms = randint(4, 6) #for now use raw numbers, eventually, generate based on the level
         r = 0
 
+        # Keep generating rooms until we hit the num_rooms value
         while r < num_rooms:
-            w = randint(4,8)
-            h = randint(4,8)
+            valid_room = 0
+            w = randint(4, 8)
+            h = randint(4, 8)
+            x = randint(1, self.stage_l - w - 1) #give buffer of 1 to each edge to allow for wall generation around floors
+            y = randint(1, self.stage_w - h - 1)
+            new_room = Room(x, y, w, h)
+            for i in rooms: #check if new room intersects with other rooms
+                if Room.intersect(i):
+                    break
+                else:
+                    valid_room = 1
+            
+            if valid_room == 1:
+                rooms.append(new_room)
+                r += 1
+            else:
+                continue
 
+    # def create_halls(self)
+    #     #Connect rooms with hallways
 
-
-
-
+    # def draw_rooms(self, rooms):
+    #     #For each room, draw the floor
