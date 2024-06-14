@@ -258,7 +258,7 @@ class Game:
                 i.draw(self.win, self.spritenum, self.guy.x, self.guy.y, self.guy.sight, grid)
         if self.dragon_spawn == 1:
             if self.dragon.alive == 1:
-                self.dragon.draw(self.win, self.spritenum, self.guy.x, self.guy.y, self.guy.sight, grid)                
+                self.dragon.draw(self.win, self.spritenum, self.guy.x, self.guy.y, self.guy.sight, grid)
         #draw some of the stage based on player location
         stage.draw_stage(self.win, self.gameboard, self.guy.x, self.guy.y, self.guy.sight, grid)
         pg.display.update()
