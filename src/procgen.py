@@ -35,6 +35,7 @@ class GameMap:
 
         # Keep generating rooms until we hit the num_rooms value
         while r < num_rooms:
+            print("Generating room " + r)
             valid_room = 0
             w = randint(4, 8)
             h = randint(4, 8)
@@ -56,5 +57,17 @@ class GameMap:
     # def create_halls(self)
     #     #Connect rooms with hallways
 
-    # def draw_rooms(self, rooms):
-    #     #For each room, draw the floor
+    def draw_rooms(self, rooms):
+        level_map = []
+        for x in range(0,self.stage_w):
+            for y in range(0, self.stage_h):
+                level_map[x,y] = "."
+
+        #For each room, draw the floor
+        for r in rooms:
+            print("r")
+            for i in range(x1,x2):
+                for j in range(y1,y2):
+                    level_map[i,j] = "*"
+        
+        print(level_map)
