@@ -6,26 +6,23 @@ from random import randint
 # Set to 1 to include debug print statements
 debug_mode = True
 
+# 
 class Room():
     # Draw a rectangle to create a room
     def __init__(self, x, y, w, h):
         self.x1 = x
-        self.x2 = x + w
+        self.x2 = x + w - 1
         self.y1 = y
-        self.y2 = y + h
+        self.y2 = y + h - 1
+        self.connect = False
     
     def center(self):
         center_x = int((self.x1 + self.x2) / 2)
         center_y = int((self.y1 + self.y2) / 2)
     
-    def intersect(self, other):
-        #returns true if this rectangle intersects with another
-        if self.x1 <= other.x2 and self.x2 >= other.x1 and self.y1 <= other.y2 and self.y2 >= other.y1:
-            print("Intersect detected!")
-            return True
-        else:
-            return False
 
+# Class used to define the leaves that the map is split into
+# Has functions to split into smaller leaves
 class Leaf():
     def __init__(self, x, y, w, h, depth):
         self.x1 = x
@@ -37,6 +34,7 @@ class Leaf():
         self.center_x = int((self.x1 + self.x2) / 2)
         self.center_y = int((self.y1 + self.y2) / 2)
         self.depth = depth # Number of splits on this leaf
+        self.has_room = False
 
     # Determine x and y coordinates to split the leaf and return child leaves
     def split(self):
@@ -60,7 +58,7 @@ class Leaf():
             new_x = self.x1 + split_x
             new_y = self.y1
         else: #Split horizontally
-            split_y = randint(round((self.h/2)-self.h*split_scale), round((self.h/2)+self.h*split_scale))
+            split_y = randint(round((self.h/2) - self.h * split_scale), round((self.h/2) + self.h * split_scale))
             # print("Split horizontally along y coord " + str(split_y))
             w1 = self.w
             w2 = self.w
@@ -78,12 +76,17 @@ class Leaf():
         return(C1,C2)
             
 
-
+# Game Map Generation
+# Organizes the leaves that the whole map is split into.
+# Has settings to vary the level generation depending on dungeon level and 
+# defined screen size. 
 class GameMap():
     def __init__(self, width, height, dun_level):
         self.stage_w = width
         self.stage_h = height
         self.dun_level = dun_level
+        self.rooms = []
+        self.map = [["."] * self.stage_w for i in range(self.stage_h)]
 
     # BSP method
     # Create initial leaf, split GameMap in half vertically or horizontally to two leaves
@@ -97,109 +100,92 @@ class GameMap():
     # Used for any further splitting of leaves
     def create_leaf(self, index):
         (L1, L2) = self.Leaves[index].split()
-        
         # Store new leaves in the current index
         self.Leaves[index] = L1
         # Insert second new leaf in the next index
         self.Leaves.insert(index+1, L2)
 
+    # Create rooms within the defined leaves
+    def create_rooms(self):
+        # Set a maximum and minimum number of rooms
+        # Should add an additional modifier for the size of the rooms
+        max_rooms = 12
+        min_rooms = 7
+        # Keep generating rooms until we hit the max_rooms value
+        for leaf in self.Leaves:
+            if not(leaf.has_room):
+                gen_chance = randint(0,100)
+                print(gen_chance)
+                # Randomize room size, dependent on dimensions of leaf
+                w = randint(4, leaf.w - 1)
+                h = randint(4, leaf.h - 1)
+                # Generate x and y corner of room
+                x = randint(leaf.x1, leaf.x2 - w) # give buffer of 1 to each edge to allow for wall generation around floors
+                y = randint(leaf.y1, leaf.y2 - h)
+                if gen_chance > 30 and len(self.rooms) < max_rooms:
+                    print("Generating room #: " + str(len(self.rooms)))
+                    new_room = Room(x, y, w, h)
+                    self.rooms.append(new_room)
+                    leaf.has_room = True
+        
+        # Run again if we didn't generate enough rooms
+        if len(self.rooms) < min_rooms:
+            self.create_rooms()
+            
+    def create_hallways(self):
+        for room in self.rooms:
+            # Check that room is not already connected
+            if not(room.connect):
+                # Find the closest room or hallway to connect to
+                # Can I perform some sort of search here? Or store all the tiles in the map into an
+                # array, and perform some sort of check to find a spot? Maybe find the closest 3-4 points
+                # and randomly connect to one of those. There needs to be some sort of logic here. 
+
+                # I also want these maps to appear sort of ordered, and not total randomness, so the algorithm
+                # should reuse corridors when possible and prioritize those in some cases. 
+
+                # Draw a hallway connecting to random spots along the side of the rooms
+                
+                room.connect = True
+
+    # Draw all the floors of the defined rooms
+    def draw_rooms(self):
+        outfile = open("levels/level" + str(self.dun_level) + "_gen.txt", "w")
+        # For each room, draw the floor
+        for r in self.rooms:
+            for i in range(r.x1,r.x2):
+                for j in range(r.y1,r.y2):
+                    self.map[j][i] = "&"
+        # Write to output file
+        for j in range(0, self.stage_h):
+            map_line = ''.join(level1.map[j]) + "\n"
+            # print(map_line)
+            outfile.writelines(map_line)
+        outfile.close()
+    
+    # Draw the outline of the leaves
+    def draw_leaf_borders(self):
+            outfile = open("levels/level" + str(self.dun_level) + "_gen.txt", "w")
+            # Loop through x and y coorindates to draw outer edge of leaf
+            for leaf in self.Leaves:
+                for i in range(leaf.x1,leaf.x2+1):
+                    self.map[leaf.y1][i] = "_"
+                    self.map[leaf.y2][i] = "_"
+                for i in range(leaf.y1,leaf.y2):
+                    self.map[i][leaf.x1] = "_"
+                    self.map[i][leaf.x2] = "_"
+            # Write to output file
+            for j in range(0, self.stage_h):
+                map_line = ''.join(level1.map[j]) + "\n"
+                # print(map_line)
+                outfile.writelines(map_line)
+            outfile.close()
+        
     # Print all leaves and their parameters - for debug
     def print_leaves(self):
         for i in level1.Leaves:
             print("x: " + str(i.x1) + "," + str(i.x2) + ", y: " + str(i.y1) + "," + str(i.y2) + ", width: " + str(i.w) + ", height: " + str(i.h) + ", depth: " + str(i.depth))
-    
-    # Draw the outline of the leaves
-    def draw_leaf_borders(self):
-            self.map = [["."] * self.stage_w for i in range(self.stage_h)]
-            outfile = open("levels/level" + str(self.dun_level) + "_gen.txt", "w")
-            
-            for leaf in self.Leaves:
-                for i in range(leaf.x1,leaf.x2+1):
-                    print("Drawing x: " + str(i) + ", y: " + str(leaf.y1))
-                    self.map[leaf.y1][i] = "_"
-                    print("Drawing x: " + str(i) + ", y: " + str(leaf.y2))
-                    self.map[leaf.y2][i] = "_"
-                for i in range(leaf.y1,leaf.y2):
-                    print("Drawing x: " + str(leaf.x1) + ", y: " + str(i))
-                    self.map[i][leaf.x1] = "_"
-                    print("Drawing x: " + str(leaf.x2) + ", y: " + str(i))
-                    self.map[i][leaf.x2] = "_"
 
-            # Write to output file
-            for j in range(0, self.stage_h):
-                map_line = ''.join(level1.map[j]) + "\n"
-                print(map_line)
-                outfile.writelines(map_line)
-            
-            outfile.close()
-                    
-
-    # Random rectangle method: 
-    def create_rooms(self):
-        # Create rooms in each leaf, or random chance to be an empty spot
-        self.rooms = []
-
-        # Set a maximum and minimum number of rooms
-        # Dependent on how the leaves are generated?
-        # max_rooms = 
-        # min_rooms =
-
-        # Keep generating rooms until we hit the num_rooms value
-        while r < num_rooms:
-            print("Generating room " + str(r))
-            valid_room = 0
-            # Randomize room size
-            w = randint(4, 12)
-            h = randint(4, 10)
-            # Generate x and y corner of room
-            x = randint(1, self.stage_w - w - 1) # give buffer of 1 to each edge to allow for wall generation around floors
-            y = randint(1, self.stage_h - h - 1)
-            print("Width: " + str(w) + ", Height: " + str(h))
-            new_room = Room(x, y, w, h)
-            print("Room x1, x2: " + str(new_room.x1) + ", " + str(new_room.x2))
-            print("Room y1, y2: " + str(new_room.y1) + ", " + str(new_room.y2))
-            if r == 0:
-                valid_room = 1
-            else:
-                for i in self.rooms: #check if new room intersects with other rooms
-                    print("Room " + str(r) + ", check for intersect.")
-                    if Room.intersect(new_room, i):
-                        valid_room = 0
-                        break
-                    else:
-                        valid_room = 1
-            
-            if valid_room == 1:
-                print("Room is valid.")
-                self.rooms.append(new_room)
-                r += 1
-            else:
-                print("Room not valid, continue loop.")
-                continue
-
-    def draw_rooms(self):
-        self.map = [["."] * self.stage_w for i in range(self.stage_h)]
-        outfile = open("levels/level" + str(self.dun_level) + "_gen.txt", "w")
-
-        # For each room, draw the floor
-        for r in self.rooms:
-            print("Drawing room " + str(r))
-            print(range(r.x1,r.x2))
-            print(range(r.y1,r.y2))
-            for i in range(r.x1,r.x2):
-                for j in range(r.y1,r.y2):
-                    self.map[j][i] = "*"
-        
-        # Write to output file
-        for j in range(0, self.stage_h):
-            map_line = ''.join(level1.map[j]) + "\n"
-            print(map_line)
-            outfile.writelines(map_line)
-
-        outfile.close()
-
-    # def draw_hallways(self):
-        
 
 level1 = GameMap(60, 40, 1)
 level1.init_leaf()
@@ -232,7 +218,8 @@ if debug_mode:
     print("Fourth Split")
     level1.print_leaves()
 
+level1.create_rooms()
 level1.draw_leaf_borders()
+level1.draw_rooms()
 
-# level1.draw_rooms()
 print("Done!") 
