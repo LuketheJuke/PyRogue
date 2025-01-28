@@ -25,7 +25,7 @@ class Leaf():
         if self.w > 2.2 * self.h or self.h < 7:
             split_dir = 1 # Split vertically
         elif self.h > 1.6 * self.w or self.w < 9:
-            split_dir = 0 # Split horizontally
+            split_dir = 0 # Split horizontally.
         else:
             split_dir = randint(0,1)
 

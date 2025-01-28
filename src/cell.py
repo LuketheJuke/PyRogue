@@ -8,6 +8,8 @@ class Cell():
         self.x = x
         self.y = y
         self.connected = False
+        self.main = False
         self.occupied = False
         self.has_item = False
+        self.walkable = False
         self.value = "."
