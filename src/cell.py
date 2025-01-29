@@ -7,8 +7,6 @@ class Cell():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.connected = False
-        self.main = False
         self.occupied = False
         self.has_item = False
         self.walkable = False

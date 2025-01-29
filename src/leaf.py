@@ -7,9 +7,9 @@ from random import randint
 class Leaf():
     def __init__(self, x, y, w, h, depth):
         self.x1 = x
-        self.x2 = x + w - 1
+        self.x2 = x+w
         self.y1 = y
-        self.y2 = y + h - 1
+        self.y2 = y+h
         self.w = w
         self.h = h
         self.center_x = int((self.x1 + self.x2) / 2)
