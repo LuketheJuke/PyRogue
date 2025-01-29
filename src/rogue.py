@@ -6,7 +6,6 @@ import people
 import tileset
 import items
 
-
 np.set_printoptions(threshold=np.inf)
 pg.init()
 

@@ -10,4 +10,5 @@ class Cell():
         self.occupied = False
         self.has_item = False
         self.walkable = False
+        self.room = False
         self.value = "."

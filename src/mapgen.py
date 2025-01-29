@@ -6,7 +6,7 @@ import leaf as leaf
 import tileset
 from random import randint
 
-# Set to 1 to include debug print statements
+# Set to True to include debug print statements
 debug_mode = True
             
 # Game Map Generation
@@ -21,9 +21,9 @@ class MapGen():
         self.rooms = []
         self.grid = []
         self.totalarea = 0
-        for y in range(0, height):
+        for y in range(height):
             row = []
-            for x in range(0, width):
+            for x in range(width):
                 row.append(cell.Cell(x, y))
             self.grid.append(row)
 
@@ -108,13 +108,7 @@ class MapGen():
             for j in range(room.y1,room.y2):
                 self.grid[j][i].value = "*"
                 self.grid[j][i].walkable = True
-        # Draw the walls
-        # for i in range(room.x1, room.x2):
-        #     self.grid[room.y1][i].value = '='
-        #     self.grid[room.y2][i].value = '='
-        # for i in range(room.y1, room.y2):
-        #     self.grid[room.x1][i].value = '='
-        #     self.grid[room.x2][i].value = '='
+                self.grid[j][i].room = True
 
     # Create a hallway connecting new room to the rest of the level, to the nearest connecting point
     def create_hallway(self, room):
@@ -132,28 +126,32 @@ class MapGen():
         else:
             y_range = range(conn_y, room_y+1)
         # Draw a hallway connecting the room point with connect point
-        # if room_x != conn_x:
-        #     for x in x_range:
-        #         self.grid[room_y][x].value = "*"
-        #         self.grid[room_y][x].walkable = True
-        #         # Draw surrounding wall
-        #         self.grid[room_y+1][x].value = '='
-        #         self.grid[room_y-1][x].value = '='
-        # if room_y != conn_y:
-        #     for y in y_range:
-        #         self.grid[y][conn_x].value = "*"
-        #         self.grid[y][conn_x].walkable = True
-        #         # Draw surrounding wall
-        #         self.grid[y][conn_x+1].value = '='
-        #         self.grid[y][conn_x-1].value = '='
+        if room_x != conn_x:
+            for x in x_range:
+                self.grid[room_y][x].value = "*"
+                self.grid[room_y][x].walkable = True
+        if room_y != conn_y:
+            for y in y_range:
+                self.grid[y][conn_x].value = "*"
+                self.grid[y][conn_x].walkable = True
 
-# Search the whole map for the closest connectable point
+    def draw_walls(self):
+        for x in range(0, self.stage_w): 
+            for y in range(0, self.stage_h):
+                if self.grid[y][x].value == "*":
+                    outer_cells = [self.grid[y+1][x], self.grid[y][x+1], self.grid[y-1][x], self.grid[y][x-1],
+                                   self.grid[y+1][x+1], self.grid[y-1][x+1], self.grid[y-1][x-1], self.grid[y+1][x-1]]
+                    for c in outer_cells:
+                        if c.value == ".":
+                            c.value = "="
+
+    # Search the whole map for the closest connectable point
     # srch_main modifies it to search for a point connected to the main cluster
     def search_conn_point(self, room_x, room_y, x1, x2, y1, y2):
         best_dist = 50
         conn_point = ()
-        for x in range(0, self.stage_w - 1): 
-            for y in range(0, self.stage_h - 1):
+        for x in range(0, self.stage_w): 
+            for y in range(0, self.stage_h):
                 # Check if we're in this room
                 this_room = (x >= x1 and x <= x2) and (y >= y1 and y <= y2)
                 # Initial distance check
@@ -188,8 +186,8 @@ class MapGen():
         self.exitx = randint(exitroom.x1+1, exitroom.x2-1)
         self.exity = randint(exitroom.y1+1, exitroom.y2-1)
 
-        self.grid[self.starty][self.startx].value = "S"
-        self.grid[self.exity][self.exitx].value = "E"
+        self.grid[self.starty][self.startx].value = "p"
+        self.grid[self.exity][self.exitx].value = "f"
 
         print("Start: ("+str(self.startx)+","+str(self.starty)+")"+", End: "+"("+str(self.exitx)+","+str(self.exity)+")")
 
@@ -206,14 +204,14 @@ class MapGen():
                 self.flood_fill(x-1, y)
             if y > 0:
                 self.flood_fill(x, y-1)
-            if self.grid[y][x].value != "S" and self.grid[y][x].value != "E":
+            if self.grid[y][x].value != "p" and self.grid[y][x].value != "f":
                 self.grid[y][x].value = "="
         else:
             return
 
     def check_connected(self):
-        for x in range(0, self.stage_w - 1):
-            for y in range(0, self.stage_h - 1):
+        for x in range(0, self.stage_w):
+            for y in range(0, self.stage_h):
                 if self.grid[y][x].walkable == True and self.grid[y][x].main == False:
                     self.all_cells_conn == False
     
@@ -226,12 +224,13 @@ class MapGen():
                 print("L.y1 = "+str(L.y1))
                 print("L.y2 = "+str(L.y2))
                 for i in range(L.x1,L.x2):
+                    print(i)
                     self.grid[L.y1][i].value = "_"
-                    self.grid[L.y2][i].value = "_"
+                    self.grid[L.y2-1][i].value = "_"
                 for i in range(L.y1,L.y2):
+                    print(i)
                     self.grid[i][L.x1].value = "_"
-                    self.grid[i][L.x2].value = "_"
-            
+                    self.grid[i][L.x2-1].value = "_"
         
     # Print all leaves and their parameters - for debug
     def print_leaves(self):
@@ -241,9 +240,9 @@ class MapGen():
     def write_output(self, name):
         outfile = open("levels/level" + name + "_gen.txt", "w")
         # Write to output file
-        for j in range(0, self.stage_h - 1):
+        for j in range(0, self.stage_h):
             map_line = ''
-            for i in range(0,self.stage_w - 1):
+            for i in range(0,self.stage_w):
                 map_line += self.grid[j][i].value
             map_line += "\n"
             outfile.writelines(map_line)
@@ -252,7 +251,7 @@ class MapGen():
 # Test code, generate level to test if it's working
 # Eventually, create a function that does all this with parameters
 # that can be fed in from the top level. 
-level1 = MapGen(60, 40, 1)
+level1 = MapGen(60, 32, 1)
 level1.init_leaf()
 
 for i, val in enumerate(level1.Leaves):
@@ -268,7 +267,10 @@ for i, val in enumerate(level1.Leaves):
         level1.create_leaf(i)
 
 level1.create_rooms()
-#level1.draw_leaf_borders()
+level1.write_output("1_nowalls")
+
+level1.draw_walls()
+# level1.draw_leaf_borders()
 level1.place_start_exit()
 
 # Write to output file

@@ -12,7 +12,7 @@ levellist = ["levels/level1.txt",
 
 # gameboard tile definitions
 # '0' = empty ('.')
-# '1' = walkable floor ('#')
+# '1' = walkable floor ('*')
 # '2' = wall or obstacle ('=')
 # '3' = player('p')
 # '4' = enemy ('e'')
@@ -29,7 +29,7 @@ def generate(win, gameboard, height, grid_w, level, grid):
     # and write tiles to the screen
     tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     if level == 1:
-        f = open("levels/level1.txt", "r")
+        f = open("levels/level1_gen.txt", "r")
     elif level == 2:
         f = open("levels/level2.txt", "r")
     elif level == 3:
