@@ -1,6 +1,9 @@
 import pygame as pg
 import numpy as np
 import pygame.freetype
+
+from engine import Engine
+
 import stage
 import people
 import tileset

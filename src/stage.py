@@ -1,5 +1,7 @@
 import pygame as pg
+import tcod
 import tileset
+from mapgen import MapGen
 from numpy import loadtxt
 from random import randint
 
@@ -23,13 +25,13 @@ levellist = ["levels/level1.txt",
 # '9' = DRAGON ('d')
 # '10' = battle axe ('b')
 # '11' = plate mail ('m')
-def generate(win, gameboard, height, grid_w, level, grid):
+def generate(win, gameboard, width, height, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
     tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     if level == 1:
-        f = open("levels/level1_gen.txt", "r")
+        MapGen.generate(height, width, 1)
     elif level == 2:
         f = open("levels/level2.txt", "r")
     elif level == 3:
@@ -145,6 +147,7 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
                             else:
                                 win.blit(pg.transform.flip(tiles[4][2],0,1), (x*grid, y*grid))
 
+# Used to re-draw the floor after a character moves, should make this smarter
 def draw_floor(win, x, y, grid):
     tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     win.blit(tiles[0][0], (x*grid, y*grid))

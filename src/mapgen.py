@@ -6,9 +6,6 @@ import leaf as leaf
 import tileset
 from random import randint
 
-# Set to True to include debug print statements
-debug_mode = True
-            
 # Game Map Generation
 # Organizes the leaves that the whole map is split into.
 # Has settings to vary the level generation depending on dungeon level and 
@@ -26,6 +23,34 @@ class MapGen():
             for x in range(width):
                 row.append(cell.Cell(x, y))
             self.grid.append(row)
+
+    def generate(self, width, height, level):
+        # Test code, generate level to test if it's working
+        # Eventually, create a function that does all this with parameters
+        # that can be fed in from the top level. 
+        level1 = MapGen(width, height, level)
+        level1.init_leaf()
+
+        for i, val in enumerate(level1.Leaves):
+            if val.depth < 2:
+                level1.create_leaf(i)
+
+        for i, val in enumerate(level1.Leaves):
+            if val.depth < 3:
+                level1.create_leaf(i)
+
+        for i, val in enumerate(level1.Leaves):
+            if val.depth < 4:
+                level1.create_leaf(i)
+
+        level1.create_rooms()
+        level1.draw_walls()
+        # level1.draw_leaf_borders()
+        level1.place_start_exit()
+
+        # Write to output file
+        level1.write_output(str(level))
+        return self.grid
 
     # BSP method
     # Create initial leaf, split GameMap in half vertically or horizontally to two leaves
@@ -76,12 +101,6 @@ class MapGen():
                     if L.x1+1 == L.x2-w-1:
                         x = L.x1+1
                     else:
-                        # print(L.x1)
-                        # print(L.x2)
-                        # print(L.w)
-                        # print(w)
-                        # print(L.x1+1)
-                        # print((L.x2-w)-1)
                         x = randint(L.x1+1, (L.x2-w)-1)
                     if L.y1+1 == (L.y2-h)-1:
                         y = L.y1+1
@@ -193,7 +212,7 @@ class MapGen():
 
     # flood fill all "connected" cells to find outlier rooms
     def flood_fill(self, x, y):
-        print("fill cell: " + str(x) + ", " + str(y))
+        # print("fill cell: " + str(x) + ", " + str(y))
         if self.grid[y][x].walkable == True and self.grid[y][x].main == False:
             self.grid[y][x].main = True
             if x < self.stage_w-2:
@@ -208,12 +227,6 @@ class MapGen():
                 self.grid[y][x].value = "="
         else:
             return
-
-    def check_connected(self):
-        for x in range(0, self.stage_w):
-            for y in range(0, self.stage_h):
-                if self.grid[y][x].walkable == True and self.grid[y][x].main == False:
-                    self.all_cells_conn == False
     
     # Draw the outline of the leaves
     def draw_leaf_borders(self):
@@ -232,11 +245,6 @@ class MapGen():
                     self.grid[i][L.x1].value = "_"
                     self.grid[i][L.x2-1].value = "_"
         
-    # Print all leaves and their parameters - for debug
-    def print_leaves(self):
-        for i in level1.Leaves:
-            print("x: " + str(i.x1) + "," + str(i.x2) + ", y: " + str(i.y1) + "," + str(i.y2) + ", width: " + str(i.w) + ", height: " + str(i.h) + ", depth: " + str(i.depth))
-
     def write_output(self, name):
         outfile = open("levels/level" + name + "_gen.txt", "w")
         # Write to output file
@@ -248,32 +256,5 @@ class MapGen():
             outfile.writelines(map_line)
         outfile.close()
 
-# Test code, generate level to test if it's working
-# Eventually, create a function that does all this with parameters
-# that can be fed in from the top level. 
-level1 = MapGen(60, 32, 1)
-level1.init_leaf()
-
-for i, val in enumerate(level1.Leaves):
-    if val.depth < 2:
-        level1.create_leaf(i)
-
-for i, val in enumerate(level1.Leaves):
-    if val.depth < 3:
-        level1.create_leaf(i)
-
-for i, val in enumerate(level1.Leaves):
-    if val.depth < 4:
-        level1.create_leaf(i)
-
-level1.create_rooms()
-level1.write_output("1_nowalls")
-
-level1.draw_walls()
-# level1.draw_leaf_borders()
-level1.place_start_exit()
-
-# Write to output file
-level1.write_output("1")
 
 print("Done!") 
