@@ -1,0 +1,121 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36" version="26.0.10">
+  <diagram name="Page-1" id="Aty8tI2gJO10xNdnHLtW">
+    <mxGraphModel dx="1195" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-1" value="Rogue" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="360" y="80" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-2" value="MapGen" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="105" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-3" value="Input Handler" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="560" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-4" value="Entities" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="560" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-6" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="HV6ALQtNWW2d_7GMY2gs-3" target="HV6ALQtNWW2d_7GMY2gs-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="560" as="sourcePoint" />
+            <mxPoint x="450" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-7" value="MapGen will generate a map,&amp;nbsp;&lt;div&gt;which is a grid map_width x map_height.&amp;nbsp;&lt;/div&gt;&lt;div&gt;This map tells the entities where to spawn,&amp;nbsp;&lt;/div&gt;&lt;div&gt;including the player, and enemies. And it&lt;/div&gt;&lt;div&gt;tells the render function where to draw the&amp;nbsp;&lt;/div&gt;&lt;div&gt;stage architecture.&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="250" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-8" value="Render" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="240" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-9" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="470" as="sourcePoint" />
+            <mxPoint x="500" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-10" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="379" as="sourcePoint" />
+            <mxPoint x="560" y="379" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-11" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="470" as="sourcePoint" />
+            <mxPoint x="440" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-12" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="229.5" as="sourcePoint" />
+            <mxPoint x="380" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-13" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="230" as="sourcePoint" />
+            <mxPoint x="450" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-14" value="Used to generate any character in the game.&lt;div&gt;Enemies, player, NPC&#39;s, etc. Each will&lt;/div&gt;&lt;div&gt;have stats like health, attack, what items&lt;/div&gt;&lt;div&gt;they&#39;re holding, etc.&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="390" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-16" value="hud" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="240" y="560" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-17" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="HV6ALQtNWW2d_7GMY2gs-8" target="HV6ALQtNWW2d_7GMY2gs-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="430" as="sourcePoint" />
+            <mxPoint x="450" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-18" value="All info going to the render&lt;div&gt;block will also go the hud,&amp;nbsp;&lt;/div&gt;&lt;div&gt;and as render generates the&amp;nbsp;&lt;/div&gt;&lt;div&gt;stage, it will draw the hud at&amp;nbsp;&lt;/div&gt;&lt;div&gt;the bottom of the screen.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="550" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-20" value="" style="endArrow=classic;html=1;rounded=0;entryX=-0.006;entryY=0.143;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="340" as="sourcePoint" />
+            <mxPoint x="410" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-21" value="" style="endArrow=none;html=1;rounded=0;exitX=0.692;exitY=1.033;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="HV6ALQtNWW2d_7GMY2gs-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="210" as="sourcePoint" />
+            <mxPoint x="440" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-25" value="" style="endArrow=none;html=1;rounded=0;entryX=0.162;entryY=1.027;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="230" as="sourcePoint" />
+            <mxPoint x="390" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-26" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="110" as="sourcePoint" />
+            <mxPoint x="440" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-27" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.473;entryY=-0.038;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="110" as="sourcePoint" />
+            <mxPoint x="310" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-28" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="HV6ALQtNWW2d_7GMY2gs-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="620" y="110" as="sourcePoint" />
+            <mxPoint x="440" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV6ALQtNWW2d_7GMY2gs-29" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="HV6ALQtNWW2d_7GMY2gs-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="310" as="sourcePoint" />
+            <mxPoint x="620" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

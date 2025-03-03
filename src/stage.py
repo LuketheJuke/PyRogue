@@ -1,7 +1,7 @@
 import pygame as pg
 import tcod
 import tileset
-from mapgen import MapGen
+from mapgen import gen_level
 from numpy import loadtxt
 from random import randint
 
@@ -25,13 +25,14 @@ levellist = ["levels/level1.txt",
 # '9' = DRAGON ('d')
 # '10' = battle axe ('b')
 # '11' = plate mail ('m')
-def generate(win, gameboard, width, height, level, grid):
+def generate(win, gameboard, height, width, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
     tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     if level == 1:
-        MapGen.generate(height, width, 1)
+        # map = gen_level(width, height, level)
+        f = open("levels/level1.txt", "r")
     elif level == 2:
         f = open("levels/level2.txt", "r")
     elif level == 3:
@@ -43,9 +44,9 @@ def generate(win, gameboard, width, height, level, grid):
     for y in range(0,(height)):
         # print(y)
         line = f.readline()
-        leveldata.append(line[0:grid_w])
+        leveldata.append(line[0:width])
         for x in range(0,len(gameboard[0])): 
-            # print(x)
+            print(x)
             if line[x] == '.': 
                 gameboard[y][x] = 0
             elif line[x] == '*': 

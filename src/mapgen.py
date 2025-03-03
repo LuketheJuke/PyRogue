@@ -16,41 +16,13 @@ class MapGen():
         self.stage_h = height
         self.dun_level = dun_level
         self.rooms = []
-        self.grid = []
+        self.map = []
         self.totalarea = 0
         for y in range(height):
             row = []
             for x in range(width):
                 row.append(cell.Cell(x, y))
-            self.grid.append(row)
-
-    def generate(self, width, height, level):
-        # Test code, generate level to test if it's working
-        # Eventually, create a function that does all this with parameters
-        # that can be fed in from the top level. 
-        level1 = MapGen(width, height, level)
-        level1.init_leaf()
-
-        for i, val in enumerate(level1.Leaves):
-            if val.depth < 2:
-                level1.create_leaf(i)
-
-        for i, val in enumerate(level1.Leaves):
-            if val.depth < 3:
-                level1.create_leaf(i)
-
-        for i, val in enumerate(level1.Leaves):
-            if val.depth < 4:
-                level1.create_leaf(i)
-
-        level1.create_rooms()
-        level1.draw_walls()
-        # level1.draw_leaf_borders()
-        level1.place_start_exit()
-
-        # Write to output file
-        level1.write_output(str(level))
-        return self.grid
+            self.map.append(row)
 
     # BSP method
     # Create initial leaf, split GameMap in half vertically or horizontally to two leaves
@@ -125,9 +97,9 @@ class MapGen():
         # For each room, draw the floor
         for i in range(room.x1,room.x2):
             for j in range(room.y1,room.y2):
-                self.grid[j][i].value = "*"
-                self.grid[j][i].walkable = True
-                self.grid[j][i].room = True
+                self.map[j][i].value = "*"
+                self.map[j][i].walkable = True
+                self.map[j][i].room = True
 
     # Create a hallway connecting new room to the rest of the level, to the nearest connecting point
     def create_hallway(self, room):
@@ -147,19 +119,19 @@ class MapGen():
         # Draw a hallway connecting the room point with connect point
         if room_x != conn_x:
             for x in x_range:
-                self.grid[room_y][x].value = "*"
-                self.grid[room_y][x].walkable = True
+                self.map[room_y][x].value = "*"
+                self.map[room_y][x].walkable = True
         if room_y != conn_y:
             for y in y_range:
-                self.grid[y][conn_x].value = "*"
-                self.grid[y][conn_x].walkable = True
+                self.map[y][conn_x].value = "*"
+                self.map[y][conn_x].walkable = True
 
     def draw_walls(self):
         for x in range(0, self.stage_w): 
             for y in range(0, self.stage_h):
-                if self.grid[y][x].value == "*":
-                    outer_cells = [self.grid[y+1][x], self.grid[y][x+1], self.grid[y-1][x], self.grid[y][x-1],
-                                   self.grid[y+1][x+1], self.grid[y-1][x+1], self.grid[y-1][x-1], self.grid[y+1][x-1]]
+                if self.map[y][x].value == "*":
+                    outer_cells = [self.map[y+1][x], self.map[y][x+1], self.map[y-1][x], self.map[y][x-1],
+                                   self.map[y+1][x+1], self.map[y-1][x+1], self.map[y-1][x-1], self.map[y+1][x-1]]
                     for c in outer_cells:
                         if c.value == ".":
                             c.value = "="
@@ -175,7 +147,7 @@ class MapGen():
                 this_room = (x >= x1 and x <= x2) and (y >= y1 and y <= y2)
                 # Initial distance check
                 new_dist = abs(room_x - x) + abs(room_y - y)
-                if self.grid[y][x].walkable and not(this_room) and new_dist < best_dist:
+                if self.map[y][x].walkable and not(this_room) and new_dist < best_dist:
                     conn_point = (x,y)
                     best_dist = new_dist
         print(str(room_x)+", "+str(room_y))
@@ -205,16 +177,16 @@ class MapGen():
         self.exitx = randint(exitroom.x1+1, exitroom.x2-1)
         self.exity = randint(exitroom.y1+1, exitroom.y2-1)
 
-        self.grid[self.starty][self.startx].value = "p"
-        self.grid[self.exity][self.exitx].value = "f"
+        self.map[self.starty][self.startx].value = "p"
+        self.map[self.exity][self.exitx].value = "f"
 
         print("Start: ("+str(self.startx)+","+str(self.starty)+")"+", End: "+"("+str(self.exitx)+","+str(self.exity)+")")
 
     # flood fill all "connected" cells to find outlier rooms
     def flood_fill(self, x, y):
         # print("fill cell: " + str(x) + ", " + str(y))
-        if self.grid[y][x].walkable == True and self.grid[y][x].main == False:
-            self.grid[y][x].main = True
+        if self.map[y][x].walkable == True and self.map[y][x].main == False:
+            self.map[y][x].main = True
             if x < self.stage_w-2:
                 self.flood_fill(x+1, y)
             if y < self.stage_h-2:
@@ -223,8 +195,8 @@ class MapGen():
                 self.flood_fill(x-1, y)
             if y > 0:
                 self.flood_fill(x, y-1)
-            if self.grid[y][x].value != "p" and self.grid[y][x].value != "f":
-                self.grid[y][x].value = "="
+            if self.map[y][x].value != "p" and self.map[y][x].value != "f":
+                self.map[y][x].value = "="
         else:
             return
     
@@ -238,12 +210,12 @@ class MapGen():
                 print("L.y2 = "+str(L.y2))
                 for i in range(L.x1,L.x2):
                     print(i)
-                    self.grid[L.y1][i].value = "_"
-                    self.grid[L.y2-1][i].value = "_"
+                    self.map[L.y1][i].value = "_"
+                    self.map[L.y2-1][i].value = "_"
                 for i in range(L.y1,L.y2):
                     print(i)
-                    self.grid[i][L.x1].value = "_"
-                    self.grid[i][L.x2-1].value = "_"
+                    self.map[i][L.x1].value = "_"
+                    self.map[i][L.x2-1].value = "_"
         
     def write_output(self, name):
         outfile = open("levels/level" + name + "_gen.txt", "w")
@@ -251,10 +223,35 @@ class MapGen():
         for j in range(0, self.stage_h):
             map_line = ''
             for i in range(0,self.stage_w):
-                map_line += self.grid[j][i].value
+                map_line += self.map[j][i].value
             map_line += "\n"
             outfile.writelines(map_line)
         outfile.close()
 
+def gen_level(width, height, dun_level):
+        # Generate a map
+        level = MapGen(width, height, dun_level)
+        level.init_leaf()
 
-print("Done!") 
+        for i, val in enumerate(level.Leaves):
+            if val.depth < 2:
+                level.create_leaf(i)
+
+        for i, val in enumerate(level.Leaves):
+            if val.depth < 3:
+                level.create_leaf(i)
+
+        for i, val in enumerate(level.Leaves):
+            if val.depth < 4:
+                level.create_leaf(i)
+
+        level.create_rooms()
+        level.draw_walls()
+        # level1.draw_leaf_borders()
+        level.place_start_exit()
+
+        # Write to output file
+        level.write_output(str(dun_level))
+        return level.map
+
+# generate(60, 32, 1)

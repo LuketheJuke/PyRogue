@@ -1,10 +1,15 @@
 import pygame as pg
+from render import print_to_HUD
 import tcod
 
 class hud():
-    def __init__(self, player, window, screen_width, screen_height, grid, grid_w, grid_h):
-        self.player = player
-        self.win = window
+    def __init__(self, grid, grid_w, grid_h, window):
+        self.grid = grid
+        self.grid_w = grid_w
+        self.grid_h = grid_h
+        screen_width = grid * grid_w
+        screen_height = grid * grid_h
+        self.window = window
         # Define top left corner
         self.x = 0*grid
         self.y = 32*grid
@@ -12,46 +17,43 @@ class hud():
         self.width = screen_width - self.x
         self.height = screen_height - self.y
         self.gameheight = (screen_height - self.height)//grid
-        self.FONT = pg.freetype.Font("text/manaspc.ttf", grid)
-        self.prompt = " "
         self.promptlist = []
         self.new_prompt = 0
 
-    def update(self, guy):
+    def update(self, player):
         hud_rect = (self.x, self.y, self.width, self.height)
-        pg.draw.rect(self.win, (0,0,0), hud_rect)
-        # Display level # to HUD
-        self.print_to_HUD("player Level: " + str(self.player.level), 2, 33)
-        self.print_to_HUD("player Level: " + str(self.player.level), 2, 33)
-        # Display health
-        self.print_to_HUD("Health: " + str(self.player.health) + "/" + str(self.player.health_max), 2, 34)
-        # Display weapon and attack value
-        self.print_to_HUD("Weapon: " + self.player.weapon.name, 2, 36)
-        self.print_to_HUD("Attack: " + str(self.player.weapon.attack), 2, 37)
-        # Display armor and defense
-        self.print_to_HUD("Armor: " + self.player.armor.name, 2, 38)
-        self.print_to_HUD("Defense: " + str(self.player.armor.defense), 2, 39)
-        # Display Inventory
-        self.print_to_HUD("Inventory: ", (grid_w/4)*1, 33)
-        self.print_to_HUD("1: " + self.player.inventory[0].name, (grid_w/4)*1, 34)
-        self.print_to_HUD("2: " + self.player.inventory[1].name, (grid_w/4)*1, 35)
-        self.print_to_HUD("3: " + self.player.inventory[2].name, (grid_w/4)*1, 36)
-        self.print_to_HUD("4: " + self.player.inventory[3].name, (grid_w/4)*1, 37)
-        #Check whether prompt has changed
-        # Display Info to the self.player
+        pg.draw.rect(self.window, (0,0,0), hud_rect)
+        # Update player info
+        self.update_player(player)
+        # Display any prompts that were added to the list
         for i in range(0,len(self.promptlist)):
-            self.print_to_HUD(self.promptlist[i], (grid_w/4)*2, 33+i)
+            print_to_HUD(self.promptlist[i], (self.grid_w/4)*2, 33+i)
+
+    def update_player(self, player):
+        # Display level # to HUD
+        print_to_HUD("player Level: " + str(player.level), 2, 33)
+        print_to_HUD("player Level: " + str(player.level), 2, 33)
+        # Display health
+        print_to_HUD("Health: " + str(player.health) + "/" + str(player.health_max), 2, 34)
+        # Display weapon and attack value
+        print_to_HUD("Weapon: " + player.weapon.name, 2, 36)
+        print_to_HUD("Attack: " + str(player.weapon.attack), 2, 37)
+        # Display armor and defense
+        print_to_HUD("Armor: " + player.armor.name, 2, 38)
+        print_to_HUD("Defense: " + str(player.armor.defense), 2, 39)
+        # Display Inventory
+        print_to_HUD("Inventory: ", (self.grid_w/4)*1, 33)
+        print_to_HUD("1: " + player.inventory[0].name, (self.grid_w/4)*1, 34)
+        print_to_HUD("2: " + player.inventory[1].name, (self.grid_w/4)*1, 35)
+        print_to_HUD("3: " + player.inventory[2].name, (self.grid_w/4)*1, 36)
+        print_to_HUD("4: " + player.inventory[3].name, (self.grid_w/4)*1, 37)
 
     def print_to_HUD(self, text, x, y):
         text_surf, rect = self.FONT.render(text, (255, 255, 255))
-        self.win.blit(text_surf, (x*grid, y*grid))
+        self.window.blit(text_surf, (x*self.grid, y*self.grid))
     
     # Print something to the prompt queue for the player
-    def to_prompt(self, text):
-        self.prompt = text
-        if len(self.promptlist) == 0:
-            self.promptlist.insert(0,self.prompt)
-        else:
-            self.promptlist.insert(0,self.prompt)
-            if len(self.promptlist) == 7:
-                self.promptlist.pop(6)
+    def to_prompt(self, prompt):
+        self.promptlist.insert(0,prompt)
+        if len(self.promptlist) == 7:
+            self.promptlist.pop(6)
