@@ -8,7 +8,15 @@ class Cell():
         self.x = x
         self.y = y
         self.occupied = False
+        self.hostile = False
         self.has_item = False
         self.walkable = False
-        self.room = False
+        self.wall = False
         self.value = "."
+        self.start = False
+        self.exit = False
+
+# Edit this to keep track of what's in the cell:
+# Structure: floor, wall, door, stair
+# Item: weapon, potion, armor, chest
+# NPC: enemy, ally

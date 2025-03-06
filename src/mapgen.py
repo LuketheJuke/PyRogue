@@ -58,16 +58,16 @@ class MapGen():
                 gen_chance = randint(0,100)
                 # Generate rooms randomly, as long as we haven't reached max
                 if gen_chance > 30 and len(self.rooms) < max_rooms and self.totalarea < max_area:
-                    print("Creating new room.")
+                    # print("Creating new room.")
                     # Randomize room size, dependent on dimensions of leaf
                     if L.w == 5:
                         w = 3
                     else:
-                        w = randint(3, L.w - 2)
+                        w = randint(2, L.w - 2)
                     if L.h == 5:
                         h = 3
                     else:
-                        h = randint(3, L.h - 2)
+                        h = randint(2, L.h - 2)
                     area = w * h
                     # Generate x and y corner of room
                     if L.x1+1 == L.x2-w-1:
@@ -81,7 +81,6 @@ class MapGen():
                     new_room = room.Room(x, y, w, h)
                     self.draw_room(new_room)
                     if len(self.rooms) > 0: # Check if other rooms exist before drawing hallway
-                        print("Rooms list exists.")
                         self.create_hallway(new_room)
                     self.rooms.append(new_room)
                     rooms_empty = 1
@@ -129,12 +128,13 @@ class MapGen():
     def draw_walls(self):
         for x in range(0, self.stage_w): 
             for y in range(0, self.stage_h):
-                if self.map[y][x].value == "*":
+                if self.map[y][x].walkable == True: # Generate walls around walkable terrain
                     outer_cells = [self.map[y+1][x], self.map[y][x+1], self.map[y-1][x], self.map[y][x-1],
                                    self.map[y+1][x+1], self.map[y-1][x+1], self.map[y-1][x-1], self.map[y+1][x-1]]
                     for c in outer_cells:
-                        if c.value == ".":
+                        if c.walkable == False:
                             c.value = "="
+                            c.wall = True
 
     # Search the whole map for the closest connectable point
     # srch_main modifies it to search for a point connected to the main cluster
@@ -177,8 +177,8 @@ class MapGen():
         self.exitx = randint(exitroom.x1+1, exitroom.x2-1)
         self.exity = randint(exitroom.y1+1, exitroom.y2-1)
 
-        self.map[self.starty][self.startx].value = "p"
-        self.map[self.exity][self.exitx].value = "f"
+        self.map[self.starty][self.startx].start = True
+        self.map[self.exity][self.exitx].exit = True
 
         print("Start: ("+str(self.startx)+","+str(self.starty)+")"+", End: "+"("+str(self.exitx)+","+str(self.exity)+")")
 
@@ -252,6 +252,6 @@ def gen_level(width, height, dun_level):
 
         # Write to output file
         level.write_output(str(dun_level))
-        return level.map
+        return [level.map, level.startx, level.starty]
 
-# generate(60, 32, 1)
+gen_level(60, 32, 1)

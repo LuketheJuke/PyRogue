@@ -1,13 +1,13 @@
 import pygame as pg
 import tcod
-import tileset
+# import tileset
 from mapgen import gen_level
 from numpy import loadtxt
 from random import randint
 
-def get_tiles(file, grid):
-    tiles = tileset.make_tileset(file, grid)
-    return tiles
+# def get_tiles(file, grid):
+#     tiles = tileset.make_tileset(file, grid)
+#     return tiles
 
 levellist = ["levels/level1.txt", 
             "levels/level2.txt"]
@@ -29,7 +29,7 @@ def generate(win, gameboard, height, width, level, grid):
     # Load map based on level
     # Read text file, then modify gameboard variable with stage info
     # and write tiles to the screen
-    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
+    # tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     if level == 1:
         # map = gen_level(width, height, level)
         f = open("levels/level1.txt", "r")
@@ -81,8 +81,8 @@ def generate(win, gameboard, height, width, level, grid):
 
 # draw different wall sprites depending on surrounding layout
 def draw_stage(win, gameboard, playerx, playery, sight, grid):  
-    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
-    item_tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/ItemTiles.png", grid)
+    # tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
+    # item_tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/ItemTiles.png", grid)
     wall = 2
     floor = (1, 3, 4, 5, 6, 7, 8, 9, 10, 11) #tile types that are treated as a floor
     # (len(gameboard)-1) # ymax
@@ -150,5 +150,5 @@ def draw_stage(win, gameboard, playerx, playery, sight, grid):
 
 # Used to re-draw the floor after a character moves, should make this smarter
 def draw_floor(win, x, y, grid):
-    tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
+    # tiles = get_tiles("sprites/BitsyDungeonTilesby_enui/DungeonTiles.png", grid)
     win.blit(tiles[0][0], (x*grid, y*grid))

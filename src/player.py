@@ -1,21 +1,20 @@
 import pygame as pg
-import stage
 import items
 from dice import roll
 
 # Use the same class for player and enemies
 class p1():
-    def __init__(self, health, weapon, armor, x, y, spritelist):
+    def __init__(self, health, weapon, armor, x, y):
         self.health = health
         self.health_max = health
         self.weapon = weapon
         self.armor = armor
+        self.sprites = [[0,4], [1,4]]
         self.prev_x = x
         self.x = x
         self.prev_y = y
         self.y = y
         self.location = (x, y)
-        self.spritelist = spritelist
         self.frame = 0
         self.alive = 1
         self.cleared = 0
@@ -26,71 +25,39 @@ class p1():
         self.inventory = [items.empty, items.empty, items.empty, items.empty]
 
     # Draw sprite for the person
-    def draw(self, win, spritenum, grid):
-        win.blit(self.spritelist[spritenum], (self.x*grid, self.y*grid))
+    # def draw(self, win, spritenum, grid):
+    #     win.blit(self.spritelist[spritenum], (self.x*grid, self.y*grid))
 
     # Used for movement as the player
-    def move_player(self, cx, cy, gameboard, win, grid):
+    def move_player(self, dx, dy, dest_cell):
         self.prev_x = self.x
         self.prev_y = self.y
-        nx = self.x + cx
-        ny = self.y + cy
+        nx = self.x + dx
+        ny = self.y + dy
         hit_enemy = 0
-        hit_dragon = 0
+        # hit_dragon = 0 # Make dragon a normal enemy
         next_level = 0
-        newpos = gameboard[ny][nx]
-        # Change behavior based on what's in the new position
-        if newpos == 1:
+        # New position is walkable, move to new position
+        if dest_cell.walkable == True:
             self.x = nx
             self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-        elif newpos == 4:
-            hit_enemy = 1
-        elif newpos == 5:
-            next_level = 1
-        elif newpos == 6:
-            self.weapon = items.long_sword
-            self.x = nx
-            self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-        elif newpos == 7:
-            self.x = nx
-            self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-            self.add_item(items.healing_potion)
-        elif newpos == 8:
-            self.x = nx
-            self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-            self.armor = items.leather_armor
-        elif newpos == 9:
-            hit_dragon = 1
-        elif newpos == 10:
-            self.x = nx
-            self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-            self.weapon = items.battle_axe
-        elif newpos == 11:
-            self.x = nx
-            self.y = ny
-            gameboard[self.y][self.x] = '3'
-            gameboard[self.prev_y][self.prev_x] = '1'
-            stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-            self.armor = items.plate_mail
+            # Found Exit!
+            if dest_cell.exit == True:
+                next_level = 1
+            # Found item!
+            elif dest_cell.item == True:
+                self.add_item(items.healing_potion)
+                # self.weapon = items.long_sword
+                self.x = nx
+                self.y = ny
+                # stage.draw_floor(win, self.prev_x, self.prev_y, grid)
+        elif dest_cell.occupied == True:
+            if dest_cell.enemy == True:
+                hit_enemy = 1
         else:
-            pass
+            pass # Is this how I handle a collision?
         # Return hit enemy and it's position
-        return [hit_enemy, hit_dragon, nx, ny, next_level]
+        return [hit_enemy, nx, ny, next_level]
 
     def hit(self, enemy):
         damage = roll(self.weapon.attacknum, self.weapon.attack + self.base_attack)
@@ -109,12 +76,12 @@ class p1():
             self.health -= damage_reduced
         # print(self.health)
         if self.health <= 0:
-            self.alive = 0
+            self.alive = 0 # RIP :(
 
     # Clear player from the gameboard
     def clear_player(self, gameboard, win, grid):
-        gameboard[self.y][self.x] = '1'
-        stage.draw_floor(win, self.x, self.y, grid)
+        # gameboard[self.y][self.x] = '1'
+        # stage.draw_floor(win, self.x, self.y, grid)
         self.cleared = 1
     
     def check_level_up(self):
@@ -132,7 +99,7 @@ class p1():
 
     def add_item(self, item):
         self.inventory.insert(0, item) 
-        self.inventory.pop(4) 
+        self.inventory.pop(4) # Make more inventory slots, and make it so that I can manage it
 
     def use_item(self, num):
         heal = self.inventory[num].use()

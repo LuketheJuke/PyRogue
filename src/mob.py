@@ -3,29 +3,43 @@ import stage
 import items
 from dice import roll
 
+# Keep list of enemy stats and assign the stats based on the name
+# [name, health, attack, xpval, [sprite1, sprite2]]
+enemylist = [['BAT', 3, 1, 2, [0,17], [1,17]], 
+            ['GHOST', 5, 2, 4, [0,8], [1,8]], 
+            ['GOBLIN', 6, 3, 5, [0,6], [1,6]], 
+            ['SKELETON', 8, 3, 6, [0,5], [1,5]], 
+            ['WEREWOLF', 10, 5, 12, [0,15], [1,15]]]
+dragonlist = ['DRAGON', 60, 12, 100, [1,14], [0,14],  # A 3 dimensional array with x, y, spritenum as the parameters 
+                                    [1,13], [0,13],  
+                                    [1,12], [0,12], 
+                                    [1,11], [0,11]]
+
 # Class defining mob behavior
 class mob():
-    def __init__(self, x, y, name, health, attack, xpval, spritelist):
-        self.name = name
-        self.health = health
-        self.attack = attack
-        self.xpval = xpval
+    def __init__(self, x, y, enemynum):
+        self.name = enemylist[enemynum][0]
+        self.health = enemylist[enemynum][1]
+        self.attack = enemylist[enemynum][2]
+        self.xpval = enemylist[enemynum][3]
+        self.sprites = [enemylist[enemynum][4], enemylist[enemynum][5]]
         self.prev_x = x
         self.x = x
         self.prev_y = y
         self.y = y
         self.location = (x, y)
-        self.spritelist = spritelist
-        self.frame = 0
+        self.frame = 0 
         self.alive = 1
         self.cleared = 0
 
     # Only draw on the map if the player is within a certain radius
-    def draw(self, win, spritenum, playerx, playery, sight, grid):
-        if (abs(playerx-self.x) + abs(playery-self.y)) < sight:
-            win.blit(self.spritelist[spritenum], (self.x*grid, self.y*grid))
-            
-        # Used for movement as a mob
+    # def draw(self, win, spritenum, playerx, playery, sight, grid): 
+    #     if (abs(playerx-self.x) + abs(playery-self.y)) < sight:
+    #         win.blit(self.spritelist[spritenum], (self.x*grid, self.y*grid))
+
+
+
+    # Used for movement as a mob
     def move_mob(self, gameboard, win, player_x, player_y):
         self.prev_x = self.x
         self.prev_y = self.y
@@ -34,13 +48,14 @@ class mob():
         hit_player = 0
 
         # move towards the player
+        # Only moves if within a certain range - change this to work based on a "sight" value
         if (abs(x_diff)+abs(y_diff)) < 7:
             if abs(x_diff) > abs(y_diff):
                 cy = 0
                 if x_diff > 0:
                     cx = -1
                 else:
-                    cx = 1
+                    cx = 1 
             elif abs(y_diff) > abs(x_diff):
                 cx = 0
                 if y_diff > 0:
@@ -100,17 +115,17 @@ class mob():
 
 # Modified version of mob class
 class dragon():
-    def __init__(self, x, y, name, health, attack, xpval, spritelist):
-        self.name = name
-        self.health = health
-        self.attack = attack
-        self.xpval = xpval
+    def __init__(self, x, y):
+        self.name = dragonlist[0]
+        self.health = dragonlist[1]
+        self.attack = dragonlist[2]
+        self.xpval = dragonlist[3]
         self.prev_x = x
         self.x = [x, x-1]
         self.prev_y = y
         self.y = [y, y-1]
         self.location = (x, y) #defined as the top left corner of the dragon
-        self.spritelist = spritelist
+        self.spritelist = dragonlist[4]
         self.frame = 0
         self.alive = 1
         self.cleared = 0
