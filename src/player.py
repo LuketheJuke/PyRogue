@@ -1,5 +1,5 @@
 import pygame as pg
-import items
+import item
 from dice import roll
 
 # Use the same class for player and enemies
@@ -22,7 +22,7 @@ class p1():
         self.base_attack = 0
         self.xp = 0
         self.sight = 8
-        self.inventory = [items.empty, items.empty, items.empty, items.empty]
+        self.inventory = [item.empty, item.empty, item.empty, item.empty]
 
     # Draw sprite for the person
     # def draw(self, win, spritenum, grid):
@@ -41,23 +41,23 @@ class p1():
         if dest_cell.walkable == True:
             self.x = nx
             self.y = ny
-            # Found Exit!
-            if dest_cell.exit == True:
-                next_level = 1
-            # Found item!
-            elif dest_cell.item == True:
-                self.add_item(items.healing_potion)
-                # self.weapon = items.long_sword
-                self.x = nx
-                self.y = ny
-                # stage.draw_floor(win, self.prev_x, self.prev_y, grid)
-        elif dest_cell.occupied == True:
-            if dest_cell.enemy == True:
-                hit_enemy = 1
+        #     # Found Exit!
+        #     if dest_cell.exit == True:
+        #         next_level = 1
+        #     # Found item!
+        #     elif dest_cell.item == True:
+        #         self.add_item(items.healing_potion)
+        #         # self.weapon = items.long_sword
+        #         self.x = nx
+        #         self.y = ny
+        #         # stage.draw_floor(win, self.prev_x, self.prev_y, grid)
+        # elif dest_cell.occupied == True:
+        #     if dest_cell.enemy == True:
+        #         hit_enemy = 1
         else:
             pass # Is this how I handle a collision?
         # Return hit enemy and it's position
-        return [hit_enemy, nx, ny, next_level]
+        return next_level
 
     def hit(self, enemy):
         damage = roll(self.weapon.attacknum, self.weapon.attack + self.base_attack)
@@ -106,4 +106,4 @@ class p1():
         self.health += heal
         if self.health > self.health_max:
             self.health = self.health_max
-        self.inventory[num] = items.empty
+        self.inventory[num] = item.empty

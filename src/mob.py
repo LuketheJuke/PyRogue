@@ -1,19 +1,19 @@
 import pygame as pg
 import stage
-import items
+import item
 from dice import roll
 
 # Keep list of enemy stats and assign the stats based on the name
 # [name, health, attack, xpval, [sprite1, sprite2]]
-enemylist = [['BAT', 3, 1, 2, [0,17], [1,17]], 
-            ['GHOST', 5, 2, 4, [0,8], [1,8]], 
-            ['GOBLIN', 6, 3, 5, [0,6], [1,6]], 
-            ['SKELETON', 8, 3, 6, [0,5], [1,5]], 
-            ['WEREWOLF', 10, 5, 12, [0,15], [1,15]]]
-dragonlist = ['DRAGON', 60, 12, 100, [1,14], [0,14],  # A 3 dimensional array with x, y, spritenum as the parameters 
-                                    [1,13], [0,13],  
-                                    [1,12], [0,12], 
-                                    [1,11], [0,11]]
+enemylist = [['BAT', 3, 1, 2, (0,17), (1,17)], 
+            ['GHOST', 5, 2, 4, (0,8), (1,8)], 
+            ['GOBLIN', 6, 3, 5, (0,6), (1,6)], 
+            ['SKELETON', 8, 3, 6, (0,5), (1,5)], 
+            ['WEREWOLF', 10, 5, 12, (0,15), (1,15)]]
+dragonlist = ['DRAGON', 60, 12, 100, (1,14), (0,14),  # A 3 dimensional array with x, y, spritenum as the parameters 
+                                    (1,13), (0,13),  
+                                    (1,12), (0,12), 
+                                    (1,11), (0,11)]
 
 # Class defining mob behavior
 class mob():
@@ -22,7 +22,7 @@ class mob():
         self.health = enemylist[enemynum][1]
         self.attack = enemylist[enemynum][2]
         self.xpval = enemylist[enemynum][3]
-        self.sprites = [enemylist[enemynum][4], enemylist[enemynum][5]]
+        self.sprites = (enemylist[enemynum][4], enemylist[enemynum][5])
         self.prev_x = x
         self.x = x
         self.prev_y = y
@@ -37,10 +37,8 @@ class mob():
     #     if (abs(playerx-self.x) + abs(playery-self.y)) < sight:
     #         win.blit(self.spritelist[spritenum], (self.x*grid, self.y*grid))
 
-
-
     # Used for movement as a mob
-    def move_mob(self, gameboard, win, player_x, player_y):
+    def move(self, gameboard, win, player_x, player_y):
         self.prev_x = self.x
         self.prev_y = self.y
         x_diff = self.x - player_x

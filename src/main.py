@@ -10,10 +10,10 @@ def main():
     Game = rogue.Rogue()
     Game.Start()
 
-    while rogue.playing == True:
+    while Game.playing == True:
         Game.run()
 
-    pg.quit()  
+    pg.quit()
 
 if __name__ == "__main__":
     main()

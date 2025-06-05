@@ -52,7 +52,7 @@ class MapGen():
         min_rooms = 7
         max_area = min_rooms * 60
         self.rooms = []
-        # Keep generating rooms until we hit the max_rooms value
+        # Keep generating rooms until we hit the max_rooms value 
         for L in self.Leaves:
             if not(L.has_room):
                 gen_chance = randint(0,100)
@@ -135,6 +135,7 @@ class MapGen():
                         if c.walkable == False:
                             c.value = "="
                             c.wall = True
+                            # Determine which side of the floor this is on to set the type of wall (east, west, etc).
 
     # Search the whole map for the closest connectable point
     # srch_main modifies it to search for a point connected to the main cluster
@@ -150,12 +151,12 @@ class MapGen():
                 if self.map[y][x].walkable and not(this_room) and new_dist < best_dist:
                     conn_point = (x,y)
                     best_dist = new_dist
-        print(str(room_x)+", "+str(room_y))
+        # print(str(room_x)+", "+str(room_y))
         if conn_point == ():
             print("Couldn't find connect point.")
             exit
         else:
-            print(str(conn_point))
+            # print(str(conn_point))
             return conn_point
 
     def place_start_exit(self):
@@ -167,20 +168,46 @@ class MapGen():
         while exit_room_num == start_room_num: ### Just need to make sure they're not equal. Probably is a better way.
             exit_room_num = randint(0,num_rooms-1)
         
+        # Label start and exit rooms
         startroom = self.rooms[start_room_num]
         exitroom = self.rooms[exit_room_num]
 
-        print("Start Room: "+str(start_room_num)+", End Room: "+str(exit_room_num))
-
+        # Place start and exit in a random location in their room
         self.startx = randint(startroom.x1+1, startroom.x2-1)
         self.starty = randint(startroom.y1+1, startroom.y2-1)
         self.exitx = randint(exitroom.x1+1, exitroom.x2-1)
         self.exity = randint(exitroom.y1+1, exitroom.y2-1)
 
+        # Label rooms and cells as start/exit
+        startroom.start = True
+        exitroom.exit = True
         self.map[self.starty][self.startx].start = True
         self.map[self.exity][self.exitx].exit = True
 
-        print("Start: ("+str(self.startx)+","+str(self.starty)+")"+", End: "+"("+str(self.exitx)+","+str(self.exity)+")")
+        # Debug statements
+        # print("Start Room: "+str(start_room_num)+", End Room: "+str(exit_room_num))
+        # print("Start: ("+str(self.startx)+","+str(self.starty)+")"+", End: "+"("+str(self.exitx)+","+str(self.exity)+")")
+
+    # Populate level with items and enemies
+    def populate_level(self, item_min, item_max, enemy_min, enemy_max):
+        # Cycle through rooms, place items until we hit max value
+        while item_total < item_min:
+            for r in self.rooms:
+                if item_total < item_max:
+                    num_items = randint(0,1)
+                    [item_x, item_y] = r.place_items(num_items)
+                    item_total += num_items
+                else:
+                    exit
+        # Place enemies, with enemies more likely in rooms with items
+        while enemy_total < enemy_min:
+            for r in self.rooms:
+                if enemy_total < enemy_max:
+                    enemy_num = r.place_enemies
+                    enemy_total += enemy_num
+                else:
+                    exit
+
 
     # flood fill all "connected" cells to find outlier rooms
     def flood_fill(self, x, y):
@@ -204,16 +231,16 @@ class MapGen():
     def draw_leaf_borders(self):
             # Loop through x and y coorindates to draw outer edge of leaf
             for L in self.Leaves:
-                print("L.x1 = "+str(L.x1))
-                print("L.x2 = "+str(L.x2))
-                print("L.y1 = "+str(L.y1))
-                print("L.y2 = "+str(L.y2))
+                # print("L.x1 = "+str(L.x1))
+                # print("L.x2 = "+str(L.x2))
+                # print("L.y1 = "+str(L.y1))
+                # print("L.y2 = "+str(L.y2))
                 for i in range(L.x1,L.x2):
-                    print(i)
+                    # print(i)
                     self.map[L.y1][i].value = "_"
                     self.map[L.y2-1][i].value = "_"
                 for i in range(L.y1,L.y2):
-                    print(i)
+                    # print(i)
                     self.map[i][L.x1].value = "_"
                     self.map[i][L.x2-1].value = "_"
         
@@ -233,22 +260,26 @@ def gen_level(width, height, dun_level):
         level = MapGen(width, height, dun_level)
         level.init_leaf()
 
+        # Cycle through leaves and split until we reach a certain amount of splits
+        # Modify this to be dependent on level size in the future
         for i, val in enumerate(level.Leaves):
             if val.depth < 2:
                 level.create_leaf(i)
-
         for i, val in enumerate(level.Leaves):
             if val.depth < 3:
                 level.create_leaf(i)
-
         for i, val in enumerate(level.Leaves):
             if val.depth < 4:
                 level.create_leaf(i)
 
+        # Create rooms within leaves, draw walls, place start/exit
         level.create_rooms()
         level.draw_walls()
         # level1.draw_leaf_borders()
         level.place_start_exit()
+
+        # Place items and enemies
+        level.populate_level(item_min = 4, item_max = 8, enemy_min = 4, enemy_max = 8)
 
         # Write to output file
         level.write_output(str(dun_level))

@@ -5,7 +5,7 @@ import mapgen
 import render
 import mob
 import player
-import items
+import item
 from hud import hud
 
 np.set_printoptions(threshold=np.inf)
@@ -63,13 +63,13 @@ class Rogue:
         self.level = 1
         self.stage_gen()
         self.player_gen(1)
-        self.mob_gen()
+        # self.mob_gen()
 
     def next_stage(self):
         # self.win.fill((0,0,0))
         self.stage_gen()
         self.player_gen(0)
-        self.mob_gen()
+        # self.mob_gen()
         self.hud.to_prompt("Welcome to level " + str(self.level))
 
     def stage_gen(self):
@@ -81,7 +81,7 @@ class Rogue:
     def player_gen(self, init):
         if init == 1: 
             # First time player generation
-            self.guy = player.p1(15, items.dagger, items.shirt, self.xinit, self.yinit)
+            self.guy = player.p1(15, item.dagger, item.shirt, self.xinit, self.yinit)
         else:
             # Generate player at start of new map
             self.guy.x = self.xinit
@@ -93,9 +93,8 @@ class Rogue:
         self.dragon_spawn = 0
         for y in range(0,(len(self.map))):
             for x in range(0,len(self.map[0])):
-                if self.map.enemy[y][x]:
-                    enemynum = np.random.randint(0, 4) # 5 different enemy types, make this smarter sometime later
-                    self.mobs.append(mob.mob(x, y, enemynum))
+                if self.map[y][x].enemytype: # Check if enemy string is empty
+                    self.mobs.append(mob.mob(x, y, self.map[y][x].enemytype))
                 if self.map.dragon[y][x]:
                     self.dragon = mob.dragon(x, y)
                     self.dragon_spawn = 1
@@ -137,24 +136,24 @@ class Rogue:
     def player_turn(self, dx, dy):
         if self.guy.alive == 1:
             dest_cell = self.map[self.guy.y+dy][self.guy.x+dx]
-            [hit_enemy, hit_dragon, enemy_x, enemy_y, next_level] = self.guy.move_player(dx, dy, dest_cell)
+            next_level = self.guy.move_player(dx, dy, dest_cell)
             if next_level == 1:
                 self.level += 1
                 # print(self.level)
                 self.next_stage()
-            elif hit_enemy == 1:
-                for i in self.mobs:
-                    if (i.x == enemy_x and i.y == enemy_y):
-                        damage, level_up = self.guy.hit(i)
-                        self.hud.to_prompt("YOU hit " + i.name + " for " + str(damage) + " damage")
-                        if level_up:
-                            self.hud.to_prompt("LEVEL UP!")
-            elif hit_dragon == 1:
-                damage, level_up = self.guy.hit(self.dragon)
-                self.hud.to_prompt("YOU hit " + self.dragon.name + " for " + str(damage) + " damage")
-                if level_up:
-                    self.hud.to_prompt("LEVEL UP!")
-        self.mob_turn()
+            # elif hit_enemy == 1:
+            #     for i in self.mobs:
+            #         if (i.x == enemy_x and i.y == enemy_y):
+            #             damage, level_up = self.guy.hit(i)
+            #             self.hud.to_prompt("YOU hit " + i.name + " for " + str(damage) + " damage")
+            #             if level_up:
+            #                 self.hud.to_prompt("LEVEL UP!")
+            # elif hit_dragon == 1:
+            #     damage, level_up = self.guy.hit(self.dragon)
+            #     self.hud.to_prompt("YOU hit " + self.dragon.name + " for " + str(damage) + " damage")
+            #     if level_up:
+            #         self.hud.to_prompt("LEVEL UP!")
+        # self.mob_turn()
 
     # mobs movement and attack
     def mob_turn(self):
@@ -204,21 +203,18 @@ class Rogue:
         # Only change sprites every 500 loops to slow down animation
         if self.frame == 0:
             self.frame = 100
-            if spritenum == 0:
-                spritenum = 1
-            else:
-                spritenum = 0
+            self.spritenum = not(self.spritenum)
         else:
             self.frame -= 1
         # Draw the stage
-        render.draw_stage(self.grid, self.win, self.map, self.guy.x, self.guy.y, self.guy.sight, self.grid)
+        render.draw_stage(self.grid, self.win, self.map, self.guy.x, self.guy.y, self.guy.sight)
         # Update the hud
-        self.hud.update(self.grid, self.win, spritenum, self.guy)
+        self.hud.update(self.grid, self.win, self.guy)
         # Draw the player
-        render.draw_entity(self.guy)
+        render.draw_entity(self.grid, self.win, self.spritenum, self.guy)
         # Draw the npcs and enemies
-        for i in self.mobs:
-            render.draw_entity(self.grid, self.win, spritenum, i)
+        # for i in self.mobs:
+        #     render.draw_entity(self.grid, self.win, self.spritenum, i)
         pg.display.update()
         
     def run(self):

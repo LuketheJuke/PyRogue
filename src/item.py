@@ -1,5 +1,25 @@
 from dice import roll
 
+# Import item stats from a spreadsheet?
+# What info would there need to be?
+#   name
+#   attack if equipped
+#   defense if equipped
+#   use effects
+#   
+
+class item():
+    def __init__(self, item_id):
+        self.name = item_id.name
+        self.item_type = item_id.item_type
+        self.description = item_id.description
+
+    def use():
+        pass
+    
+    def hit():
+        pass
+
 # Making classes for weapons and armor
 # Right now they're simple but they'll be useful if I add more weapon stats like durability
 class weapon():

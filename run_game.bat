@@ -1,1 +1,1 @@
-src/rogue.py
+src/main.py
