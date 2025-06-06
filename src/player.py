@@ -101,9 +101,6 @@ class p1():
         self.inventory.insert(0, item) 
         self.inventory.pop(4) # Make more inventory slots, and make it so that I can manage it
 
-    def use_item(self, num):
-        heal = self.inventory[num].use()
-        self.health += heal
-        if self.health > self.health_max:
-            self.health = self.health_max
+    def use(self, num):
+        self.inventory[num].use(self)
         self.inventory[num] = item.empty

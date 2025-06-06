@@ -9,7 +9,7 @@ class Cell():
         self.y = y
         self.occupied = False
         self.hostile = False
-        self.has_item = False
+        self.item_id = ""
         self.walkable = False
         self.wall = False
         self.value = "."

@@ -49,15 +49,15 @@ def draw_stage(grid, window, map, playerx, playery, sight):
                 if map[y][x].occupied:
                     pass 
                 elif map[y][x].has_item: # Should draw item sitting on floor tile in final version
-                    if map[y][x].item_name == "long_sword": # long sword
+                    if map[y][x].item_id == "long_sword": # long sword
                         window.blit(item_tiles[1][2], (x*grid, y*grid))
-                    elif map[y][x].item_name == "health_potion": # Health potion
+                    elif map[y][x].item_id == "health_pot": # Health potion
                         window.blit(item_tiles[1][0], (x*grid, y*grid))
-                    elif map[y][x].item_name == "leather_armor": # Leather armor
+                    elif map[y][x].item_id == "leather_armor": # Leather armor
                         window.blit(item_tiles[1][5], (x*grid, y*grid))
-                    elif map[y][x].item_name == "battle_axe": # Battle axe
+                    elif map[y][x].item_id == "battle_axe": # Battle axe
                         window.blit(item_tiles[0][3], (x*grid, y*grid))
-                    elif map[y][x].item_name == "plate_armor": # Plate armor
+                    elif map[y][x].item_id == "plate_armor": # Plate armor
                         window.blit(item_tiles[1][6], (x*grid, y*grid))
                 elif map[y][x].walkable: # floor
                     if map[y][x].exit: # down staircase

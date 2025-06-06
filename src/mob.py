@@ -1,5 +1,4 @@
 import pygame as pg
-import stage
 import item
 from dice import roll
 

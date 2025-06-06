@@ -190,23 +190,24 @@ class MapGen():
 
     # Populate level with items and enemies
     def populate_level(self, item_min, item_max, enemy_min, enemy_max):
+        item_total = 0
         # Cycle through rooms, place items until we hit max value
-        while item_total < item_min:
+        # while item_total < item_min:
+        while item_total < item_max:
             for r in self.rooms:
-                if item_total < item_max:
-                    num_items = randint(0,1)
-                    [item_x, item_y] = r.place_items(num_items)
-                    item_total += num_items
-                else:
-                    exit
-        # Place enemies, with enemies more likely in rooms with items
-        while enemy_total < enemy_min:
-            for r in self.rooms:
-                if enemy_total < enemy_max:
-                    enemy_num = r.place_enemies
-                    enemy_total += enemy_num
-                else:
-                    exit
+                item_chance = randint(0,1) # 50% chance to place item
+                if item_chance == 1:
+                    [item_id, item_x, item_y] = r.place_item()
+                    item_total += 1
+                    self.map[item_y][item_x].item_id = item_id
+        # # Place enemies, with enemies more likely in rooms with items
+        # while enemy_total < enemy_min:
+        #     for r in self.rooms:
+        #         if enemy_total < enemy_max:
+        #             enemy_num = r.place_enemies
+        #             enemy_total += enemy_num
+        #         else:
+        #             exit
 
 
     # flood fill all "connected" cells to find outlier rooms

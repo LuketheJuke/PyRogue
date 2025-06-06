@@ -1,0 +1,4 @@
+id,name,target,effect,dice,sides,modifier,duration,description
+health_pot,Health Potion,user,heal,1,4,1,instant,Use this potion to heal 1d4+1
+speed_pot,Speed Potion,user,speed,0,0,2,10,Use this potion to get move at 2x speed for 10 turns
+def_pot,Defense Potion,user,defense,0,0,2,11,Use this potion to get 2 defense for 50 turns
